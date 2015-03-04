@@ -1,0 +1,218 @@
+<Resources>	
+	<Button>
+		<Node>
+			<Name>ButtonImage_1</Name>
+			<FileName>button.png</FileName>
+			<Description>First button image file that I got online. Used by BUTTON_TEST_3. Now deprecated.</Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_2</Name>
+			<FileName>Plain.png</FileName>
+			<Description>new Button obtaied from DaButtonfcatory.com</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_3</Name>
+			<FileName>PlainPress.png</FileName>
+			<Description>First button image file that I got online. Has the most basic shape with no varieties. Works good with icons.</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_4</Name>
+			<FileName>PlainHover.png</FileName>
+			<Description>First button image file that I got online. Has the most basic shape with no varieties. Works good with icons.</Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_5</Name>
+			<FileName>File.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_6</Name>
+			<FileName>FilePress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_7</Name>
+			<FileName>FileHover.png</FileName>
+			<Description></Description>
+		</Node>
+		
+		<Node>
+			<Name>ButtonImage_8</Name>
+			<FileName>Cancel.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_9</Name>
+			<FileName>CancelPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_10</Name>
+			<FileName>CancelHover.png</FileName>
+			<Description></Description>
+		</Node>
+		
+		<Node>
+			<Name>ButtonImage_11</Name>
+			<FileName>Edit.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_12</Name>
+			<FileName>EditPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_13</Name>
+			<FileName>EditHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_14</Name>
+			<FileName>Menu.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_15</Name>
+			<FileName>MenuPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_16</Name>
+			<FileName>MenuHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_17</Name>
+			<FileName>Navigate.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_18</Name>
+			<FileName>NavigatePress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_19</Name>
+			<FileName>NavigateHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_20</Name>
+			<FileName>Next.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_21</Name>
+			<FileName>NextPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_22</Name>
+			<FileName>NextHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_23</Name>
+			<FileName>Save.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_24</Name>
+			<FileName>SavePress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_25</Name>
+			<FileName>SaveHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+
+		<Node>
+			<Name>ButtonImage_26</Name>
+			<FileName>Settings.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_27</Name>
+			<FileName>SettingsPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_28</Name>
+			<FileName>SettingsHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+
+		<Node>
+			<Name>ButtonImage_29</Name>
+			<FileName>Stop.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_30</Name>
+			<FileName>StopPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_31</Name>
+			<FileName>StopHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+
+		<Node>
+			<Name>ButtonImage_32</Name>
+			<FileName>Tools.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_33</Name>
+			<FileName>ToolsPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_34</Name>
+			<FileName>ToolsHover.png</FileName>
+			<Description></Description>
+		</Node>
+
+		<Node>
+			<Name>ButtonImage_35</Name>
+			<FileName>Back.png</FileName>
+			<Description>Contains File text</Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_36</Name>
+			<FileName>BackPress.png</FileName>
+			<Description></Description>
+		</Node>
+		<Node>
+			<Name>ButtonImage_37</Name>
+			<FileName>BackHover.png</FileName>
+			<Description></Description>
+		</Node>
+				
+
+		<Node>
+			<Name>ButtonIcons</Name>
+			<FileName>button_icons_1.png</FileName>
+			<Description>A collection of icons. These can be laid on a plauin button to get icon buttons</Description>
+		</Node>
+
+		<Node>
+			<Name>MenuBox</Name>
+			<FileName>Box.png</FileName>
+			<Description>Not a button. Will move this out later.</Description>
+		</Node>
+
+	</Button>
+</Resources>
