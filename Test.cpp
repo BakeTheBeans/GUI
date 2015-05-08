@@ -1,57 +1,43 @@
 #include <iostream>
 #include "define.h"
+#include "ScartchMe.h"
+#include <algorithm>
+#include <iterator>
+
 
 #define STOP_ON_PRESSING_SPACEBAR if ( event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space )\
 {\
     running = false;\
 }
 
-
+//#define SCRATCH 1
 
 #if(SCRATCH)
-#include "Scratch.h"
+#include <sstream>
 //#include "Utility.h"
+//#include "Scratch.h"
 #else
 #include "Utility.h"
 #include "unittest.h"
 #endif
 
+
+
 int main()
 {
+
+
 #if(SCRATCH)
-/*
-    const char * filename = "/home/rohit/Projects/Draw/Texture/Resource.xml";
 
-try{
-    GUI::xmlParser xml(filename);
-    xml.OpenDocument();
-    xml.Enter("Button");
-    GUI::ResourceNode * p = 0;
+    std::string ss = "0x101010";
+    std::stringstream foo;
 
-    while( (p = xml.getNext()) )
-    {
-            std::cout << xml.key << std::endl;
-            std::cout << p->filename << std::endl;
-            std::cout << p->description << std::endl;
+    foo << std::hex << ss;
 
-    }
+    int num;
+    foo >> num;
 
-
-
-}
-    catch(const char * ss)
-    {
-        std::cerr << ss << std::endl;
-    }
-*/
-
-    Foo TestFoo;
-    //TestFoo.Add(new Dog(10)).Add(new Cat(4)).Add(new Cow(8)).Add(new Dog(6)).Add(new Cat(9)).Add(newDog(12)).Add(new Cow(3));
-
-    TestFoo.Add(new Canine(new Dog(10))).Add(new Feline(new Cat(10))).Add(new Bovine(new Cow(10)));
-    TestFoo.getResource<Bovine>(2)->Print();
-
-
+    std::cout << "Number : " << num << std::endl;
 
 
 
@@ -72,24 +58,48 @@ try{
 
 #if(SCRATCH_TEST)
         Test = new ScratchTest(event);
-#else
-    Test = new ButtonTest_1(event);
+#elif(BUTTON_TEST)
+        Test = new ButtonTest_1(event);
+#elif(MENUBAR_TEST)
+        Test = new MenuBarTest(event);
+#elif(TEXTBOX_TEST)
+        Test = new TextBoxTest(event);
+#elif(SCROLLBAR_TEST)
+        Test = new ScrollBarTest(event);
+#elif(DIRECTORY_MENU_TEST)
+        Test = new DirectoryMenuTest(event);
+#elif(MENUTILES_TEST)
+        Test = new MenuTilesTest(event);
+#elif(SCROLLWINDOW_TEST)
+        Test = new ScrollableWindowTest(event);
+#elif(SCROLLABLETEXTWINDOW_TEST)
+        Test = new ScrollableTextWindowTest(event);
+#elif(MENUPAGE_TEST)
+        Test = new MenuPageTest(event);
+#elif(DIRECTORYMENUPAGE_TEST)
+        Test = new DirectoryMenuPageTest(event);
+#elif(DirectoryMenuTest)
+        Test = new DirectoryMenuTest(event);
 #endif
 
     Test->SetUpEnvironment();
+
     bool running = true;
 
     while(running)
     {
+#if(!NO_DISPLAY)
         while( Test->getWindowHandle()->pollEvent(event) )
         {
             STOP_ON_PRESSING_SPACEBAR;
             Test->InsidePollingImpl();           
         }
 
-#if(NO_DISPLAY)
+        Test->DisplayObjects();
+#else
         Test->NoDisplayFunction();
         break;
+
 #endif
 
     }
@@ -102,8 +112,11 @@ try{
     Test->CleanUp();
     delete Test;
 
+    GUI::ResourceManager::Dispose();
 #endif
 
     return 0;
 
 }
+
+

@@ -4,6 +4,7 @@ template class Button<FileTexture>;
 template class Button<CancelTexture>;
 template class Button<EditTexture>;
 template class Button<MenuTexture>;
+/*
 template class Button<NavigateTexture>;
 template class Button<NextTexture>;
 template class Button<SaveTexture>;
@@ -11,6 +12,7 @@ template class Button<SettingsTexture>;
 template class Button<StopTexture>;
 template class Button<ToolsTexture>;
 template class Button<BackTexture>;
+*/
 #endif
 
 

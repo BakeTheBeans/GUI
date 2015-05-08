@@ -1,30 +1,16 @@
 #ifndef UTILITY_H
 #define UTILITY_H
-
+#include <iostream>
 #include <memory>
 #include <string>
 #include <map>
-//#include <utility>
 #include "CMarkup/Markup.h"
 #include <vector>
-
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include "define.h"
 
-#define RED sf::Color::Red
-#define BLUE sf::Color::Blue
 
-
-#if(DEBUG)
-#include <cctype>
-#include <string>
-#include <iostream>
-#endif
-
-#if(DEBUG)
-#include <SFML/Graphics/Font.hpp>
-
-
-#endif
 namespace sf
 {
 class Texture;
@@ -32,81 +18,85 @@ class Font;
 }
 
 
+namespace GUI {
+
+namespace internal {
+
+enum GUI_Type
+{
+    Button,
+    Menu
+
+};
+
+EON
+EON
+
+
 
 namespace GUI
 {
+//template<typename T> struct GUITrait;
 
 
-#if(TEXTURE_2)
-enum ComponentType
-{
-    none,
-    normalButton,
-    radioButton,
-    buttonIcons
-    ,FileButtonPressed,
-    FileButtonReleased
-
-
-
-};
-#endif
-
-
-struct ResourceNode
+struct XmlNode
 {
     //Might want to add component type like button, menu, cursor etc;
+    std::string name;
+    std::string filename;
+    std::string description;
+    void Reset()
+    {
+        name.clear();
+        filename.clear();
+        description.clear();
+    }
+    void Print()
+    {
+    std::cout << name << "   " << filename << "   " << description << std::endl;
+    }
+};
+
+
+
+struct IResource
+{
+
     bool isLoaded;
     std::string filename;
     std::string description;
-    std::unique_ptr<sf::Texture> texture;
+    virtual ~IResource() {}
+    void Print()
+    {
+        std::cout << "isLoaded :" << isLoaded  << "    filename :" << filename << "    description :" << description << std::endl;
 
-public:
-    ResourceNode();
-
+    }
 };
 
-typedef ResourceNode * ResourcePtr;
 
-
-
-class xmlParser
+struct Texture : public IResource
 {
+    typedef sf::Texture* ReturnType;
+    typedef sf::Texture StorageType;
+    std::unique_ptr<sf::Texture> res;
 public:
-    std::string key;
-
-private:
-    CMarkup xml;
-    const char * filename;
-    //std::stringstream ss;
-    //std::ctring current;
-
-    bool EnterElement()
-    {
-        bool foo =  xml.IntoElem();
-        return foo;
-    }
-
-    bool ExitElement()
-    {
-        return xml.OutOfElem();
-    }
-
-    bool FindElement(const char * Tag)
-    {
-        bool foo= xml.FindElem(Tag);
-        return foo;
-    }
-
-private:
-    xmlParser() {}
-public:
-    xmlParser(const char * _filename) : key(), filename(_filename) {}
-    void OpenDocument();
-    void Enter(const char * node);
-    ResourceNode * getNext();
-
+    ReturnType getResource() { return res.get();}
+    void Store(StorageType * p) { res.reset(p); }
 };
+
+struct Font : public IResource
+{
+    typedef sf::Font* ReturnType;
+    typedef sf::Font StorageType;
+    std::unique_ptr<sf::Font> res;
+public:
+    ReturnType getResource() { return res.get(); }
+    void Store(StorageType * p) { res.reset(p); }
+};
+
+
+typedef IResource * ResourcePtr;
+class xmlParser;
 
 class ResourceManager
 {
@@ -116,15 +106,118 @@ public:
     static const char * ResourcePath;
 private:
     static std::map<Tag,ResourcePtr> ResourceMap;
+
+
     ResourceManager() {}
+    template<typename T>
+    static ResourcePtr getNext(const XmlNode & node)
+    {
+        std::string file;
+        ResourcePtr p = new T();
+        p->isLoaded = false;
+        file.append(ResourcePath).append("/").append(node.filename);
+        p->filename = file;
+        p->description = node.description;
+
+        return p;
+    }
+
+    static void Register(xmlParser & ResourceDoc, std::string MainNode);
 public:
     static void RegisterResources();
-    static sf::Texture * getTexture(const char * name);
-    static void DisposeTexture(const char * name);
+    //static void DisposeTexture(const char * name);
+
+    template<typename T>
+    static typename T::ReturnType getResource(const char * name)
+    {
+        auto it = ResourceMap.find(name);
+        if ( it == ResourceMap.end() ){
+            std::string exp;
+            exp.append("No resource with name ").append(name).append(" is registered. Check the resource file");
+            throw exp.c_str();
+        }
+
+        //ResourcePtr foo = it->second;
+        T* foo = static_cast<T*>(it->second);
+        if ( foo->isLoaded )
+        {
+            return foo->getResource();
+        }
+        else
+        {
+
+            typedef typename T::StorageType S;
+            S * resource = new S();
+            resource->loadFromFile(foo->filename);
+            foo->Store(resource);
+            //res.reset(resource);
+            foo->isLoaded = true;
+            return resource;
+        }
+
+    }
+
+    static void Print()
+    {
+
+        for(auto it= ResourceMap.begin(); it != ResourceMap.end(); it++)
+        {
+            std::cout << it->first;
+            it->second->Print();
+        }
+    }
+
+    static void Dispose();
+
+
 };
 
 
-struct internal
+
+class xmlParser
+{
+public:
+    //std::string key;
+
+
+private:
+    CMarkup xml;
+    const char * filename;
+    XmlNode node;
+
+    bool EnterElement()
+    {
+        bool foo =  xml.IntoElem();
+        return foo;
+    }
+
+
+    bool FindElement(const char * Tag)
+    {
+        bool foo= xml.FindElem(Tag);
+        return foo;
+    }
+
+public:
+    bool ExitElement()
+    {
+        return xml.OutOfElem();
+    }
+
+private:
+    xmlParser() {}
+public:
+    xmlParser(const char * _filename) : xml(), filename(_filename), node() {}
+    void OpenDocument();
+    void Enter(const char * node);
+    bool Next();
+    XmlNode & getXmlNode() { return node; }
+
+};
+
+
+//struct internal
+namespace internal
 {
 
     static std::map<std::string,ResourcePtr> CreateResourceMap()
@@ -132,89 +225,23 @@ struct internal
         std::map<std::string,ResourcePtr> Map;
         return Map;
     }
-};
 
 
-#if(TEXTURE_2)
-//Texture Manager needs to be fixed. If Component types share the
-//the texture the texture map does not ensure a single copy of texture
-//The whole point of using unique pointer is lost. Don't have time to
-//fix this right now.
-class TextureManager
-{
-
-    static const char * ImagePath;
-
-public:
-
-    typedef std::unique_ptr<sf::Texture>  TexturePtr;
-
-private:
-
-    TextureManager() {}
-
-protected:
-    static std::map<ComponentType,TexturePtr> _textureMap;
-
-
-    static std::string ImageFilePath(const char * fileName);
-
-
-public:
-    static void RegisterGuiComponent(ComponentType _btype, const char * fileName);
-
-    static sf::Texture * getTexture(ComponentType _btype);
 
 };
 
+namespace internal {
 
-
-struct internal
+enum TextAlignment
 {
+    None = 0,
+    Left = 1,
+    Center = 2,
+    Right = 3
+};
 
-static std::map<ComponentType,TextureManager::TexturePtr> CreateMap()
-{    
-
-    std::map<ComponentType,TextureManager::TexturePtr> Map;
-    return Map;
 }
 
-};
-
-#endif
-
-#if(TEXTURE_1)
-
-class TextureManager
-{
-    static const char * ImagePath;
-    typedef std::unique_ptr<sf::Texture>  TexturePtr;
-
-private:
-    TextureManager(const TextureManager & obj) {}
-    TextureManager & operator=(const TextureManager & obj) {return *this;}
-
-    TextureManager() {}
-protected:
-    std::map<ComponentType,TexturePtr> _textureMap;
-    sf::Sprite _button;
-
-    std::string ImageFilePath(const char * fileName);
-
-public:
-    static TextureManager & getTextureManager()
-    {
-        static TextureManager _manager;
-        return _manager;
-    }
-
-    void RegisterGuiComponent(ComponentType _btype, const char * fileName);
-
-    sf::Texture & getTexture(ComponentType _btype);
-
-};
-
-#endif
 
 
 EON

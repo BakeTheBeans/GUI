@@ -5,7 +5,7 @@ namespace GUI {
 
 #if(BUTTON_4)
 
-ButtonTexture :: ButtonTexture() : type(BUTTON::None), ImageFileNameMap() {}
+ButtonTexture :: ButtonTexture() :  ImageFileNameMap() {}
 
 
 std::string ButtonTexture :: getImageName(BUTTON::ImageId id)
@@ -16,31 +16,31 @@ std::string ButtonTexture :: getImageName(BUTTON::ImageId id)
         return it->second;
     }
 
-    else throw "No Button Image File name exists for the requested enumeration type";
+    else throw "No Button Image File name exists for the requested enumeration type.";
 
 }
 
 sf::Texture * ButtonTexture :: getButtonTexture()
 {
-     return ResourceManager::getTexture(getImageName(BUTTON::BUTTON_IMAGE_NAME).c_str() );
+     return ResourceManager::getResource<GUI::Texture>(getImageName(BUTTON::BUTTON_IMAGE_NAME).c_str() );
 
 }
 
 sf::Texture * ButtonTexture :: getPressedButtonTexture()
 {
-     return ResourceManager::getTexture(getImageName(BUTTON::PRESSED_BUTTON_IMAGE_NAME).c_str() );
+     return ResourceManager::getResource<GUI::Texture>(getImageName(BUTTON::PRESSED_BUTTON_IMAGE_NAME).c_str() );
 
 }
 
 sf::Texture * ButtonTexture :: getHoverButtonTexture()
 {
-     return ResourceManager::getTexture(getImageName(BUTTON::HOVER_BUTTON_IMAGE_NAME).c_str() );
+     return ResourceManager::getResource<GUI::Texture>(getImageName(BUTTON::HOVER_BUTTON_IMAGE_NAME).c_str() );
 }
 
 
 PlainTexture :: PlainTexture()
 {
-    type = BUTTON::Plain;
+    //type = BUTTON::Plain;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_2";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_3";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_4";
@@ -48,15 +48,16 @@ PlainTexture :: PlainTexture()
 
 FileTexture :: FileTexture()
 {
-    type = BUTTON::File;
+    //type = BUTTON::File;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_5";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_6";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_7";
 }
 
+
 CancelTexture :: CancelTexture()
 {
-    type = BUTTON::Cancel;
+    //type = BUTTON::Cancel;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_8";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_9";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_10";
@@ -64,23 +65,26 @@ CancelTexture :: CancelTexture()
 
 EditTexture :: EditTexture()
 {
-    type = BUTTON::Edit;
+    //type = BUTTON::Edit;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_11";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_12";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_13";
 }
 
+
+
 MenuTexture :: MenuTexture()
 {
-    type = BUTTON::Menu;
+    //type = BUTTON::Menu;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_14";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_15";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_16";
 }
 
+/*
 NavigateTexture :: NavigateTexture()
 {
-    type = BUTTON::Navigate;
+    //type = BUTTON::Navigate;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_17";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_18";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_19";
@@ -88,7 +92,7 @@ NavigateTexture :: NavigateTexture()
 
 NextTexture :: NextTexture()
 {
-    type = BUTTON::Next;
+    //type = BUTTON::Next;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_20";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_21";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_22";
@@ -96,7 +100,7 @@ NextTexture :: NextTexture()
 
 SaveTexture :: SaveTexture()
 {
-    type = BUTTON::Save;
+    //type = BUTTON::Save;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_23";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_24";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_25";
@@ -104,7 +108,7 @@ SaveTexture :: SaveTexture()
 
 SettingsTexture :: SettingsTexture()
 {
-    type = BUTTON::Settings;
+    //type = BUTTON::Settings;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_26";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_27";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_28";
@@ -112,7 +116,7 @@ SettingsTexture :: SettingsTexture()
 
 StopTexture :: StopTexture()
 {
-    type = BUTTON::Stop;
+    //type = BUTTON::Stop;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_29";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_30";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_31";
@@ -120,7 +124,7 @@ StopTexture :: StopTexture()
 
 ToolsTexture :: ToolsTexture()
 {
-    type = BUTTON::Tools;
+    //type = BUTTON::Tools;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_32";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_33";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_34";
@@ -129,12 +133,12 @@ ToolsTexture :: ToolsTexture()
 
 BackTexture :: BackTexture()
 {
-    type = BUTTON::Back;
+    //type = BUTTON::Back;
     ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_35";
     ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_36";
     ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_37";
 }
-
+*/
 
 #else
 ButtonTexture :: ButtonTexture() : type(BUTTON::None), ImageFileNameMap() {}

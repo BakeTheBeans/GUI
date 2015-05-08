@@ -1,19 +1,13 @@
 #include "Utility.h"
 #include "define.h"
-//#include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
-#include<utility>
+#include <utility>
 namespace GUI
 {
 
 
-std::map<ResourceManager::Tag,ResourcePtr> ResourceManager::ResourceMap = internal::CreateResourceMap();
-const char *  ResourceManager::ResourceFileName = "Resource.xml";
-const char * ResourceManager::ResourcePath = "/home/rohit/Projects/Draw/Resources";
-
-ResourceNode :: ResourceNode() : isLoaded(false), filename(), description(), texture(nullptr) {}
 
 /*
  * Enter main node like Button
@@ -34,7 +28,8 @@ void xmlParser :: Enter(const char * node)
 void xmlParser :: OpenDocument()
 {
     if ( filename == 0 ) throw " No resource filename provided";
-    if ( !xml.Load(filename) ) throw "Could not find resource file";
+
+    if ( !xml.Load(filename) ) throw "Could not find resource file or the XML file is Illformed";
     FindElement(0);
     EnterElement();
     //if (xml.GetData().compare("Resources") != 0 )throw "Did you change the resorces file. The head node should be \"Resources\" ";
@@ -42,28 +37,56 @@ void xmlParser :: OpenDocument()
 
 
 /*
- * Returns pointer to 0 if nothing exists.
- * Use this only for main objects like buttons etc.
+ * Use this only for main objects like Texture etc.
  * Access name  using key.
  */
-ResourceNode * xmlParser :: getNext()
+bool xmlParser :: Next()
 {
-    key.clear();
-    ResourceNode * node = 0;
+
+    node.Reset();
     bool exists = FindElement("Node") ? EnterElement() : false;
 
     if ( exists && FindElement("Name") )
-    {                
+    {
         std::string file;
-        file.append(ResourceManager::ResourcePath).append("/");
-        key = xml.GetData().c_str();
-        node = new ResourceNode();
-        if ( FindElement("FileName") ) node->filename = file.append(xml.GetData().c_str());
-        if ( FindElement("Description")) node->description = xml.GetData().c_str();
 
+        node.name = xml.GetData();
+        if ( FindElement("FileName") ) node.filename = xml.GetData();
+        if ( FindElement("Description")) node.description = xml.GetData();
         ExitElement();
+        return true;
     }
-    return node;
+    else return false;
+
+}
+
+
+const char * ResourceManager::ResourcePath = "/home/rohit/Projects/Draw/Resources";
+const char *  ResourceManager::ResourceFileName = "Resources.xml";
+std::map<ResourceManager::Tag,ResourcePtr> ResourceManager::ResourceMap = internal::CreateResourceMap();
+
+
+void ResourceManager :: Register(xmlParser & ResourceXmlDoc, std::string MainNode)
+{
+    ResourceXmlDoc.Enter(MainNode.c_str());
+    ResourcePtr p = 0;
+
+    while( ResourceXmlDoc.Next() )
+    {
+        if ( MainNode.compare("Texture") == 0 )
+        {
+            p = ResourceManager::getNext<Texture>(ResourceXmlDoc.getXmlNode());
+        }
+        else if ( MainNode.compare("Font") == 0 )
+        {
+            p = ResourceManager::getNext<Font>(ResourceXmlDoc.getXmlNode());
+        }
+        else throw "Unrecognizable Main Node";
+        std::string key = ResourceXmlDoc.getXmlNode().name;
+        ResourceMap.insert(std::make_pair( key, p));
+
+    }
+
 
 }
 
@@ -71,131 +94,28 @@ void ResourceManager :: RegisterResources()
 {
     std::string file;
     file.append(ResourcePath).append("/").append(ResourceFileName);
-    xmlParser ResourceDoc(file.c_str());
-    ResourceDoc.OpenDocument();
-    auto Load = [&] (const char * Component)->void
+    xmlParser ResourceXmlDoc(file.c_str());
+    ResourceXmlDoc.OpenDocument();
+/*
+    typedef ResourcePtr (* ResourceManager::FuncPtr)();
+    FuncPtr CallBack =
     {
-        ResourceDoc.Enter(Component);
-        ResourcePtr p;
-        while( (p = ResourceDoc.getNext() ) )
-        {
-            ResourceMap.insert(  std::make_pair(std::string(ResourceDoc.key), p) );
-        }
+        &ResourceManager::getResource<Texture>,
+        &ResourceManager::getResource<Font>
     };
 
-    Load("Button");
+*/
+
+    Register(ResourceXmlDoc,std::string("Texture"));
+    ResourceXmlDoc.ExitElement();
+    Register(ResourceXmlDoc,std::string("Font"));
 }
 
-
-sf::Texture * ResourceManager :: getTexture(const char * name)
+void ResourceManager :: Dispose()
 {
-     auto it = ResourceMap.find(name);
-     if ( it == ResourceMap.end() ){
-         std::string exp;
-         exp.append("No rsource with name ").append(name).append(" is registered. Check the resource file");
-         throw exp.c_str();
-     }
-
-     ResourcePtr foo = it->second;
-     if ( foo->isLoaded ) return foo->texture.get();
-     else
-     {
-         sf::Texture * bar = new sf::Texture();
-         bar->loadFromFile(foo->filename);
-         foo->texture.reset(bar);
-         foo->isLoaded = true;
-         return bar;
-     }
+    for(auto it = ResourceMap.begin(); it != ResourceMap.end(); it++)
+        delete it->second;
 }
 
-
-void ResourceManager ::  DisposeTexture(const char * name)
-{
-    auto it = ResourceMap.find(name);
-    if ( it->second != 0 )
-    {
-        ResourcePtr foo = it->second;
-        foo->texture.release();
-        foo->texture.reset(0);
-        foo->isLoaded = false;
-    }
-}
-
-//#endif
-
-
-#if(TEXTURE_2)
-const char * TextureManager::ImagePath = "/home/rohit/Projects/Draw/Texture/";
-
-
-std::map<ComponentType,TextureManager::TexturePtr> TextureManager::_textureMap = internal::CreateMap();
-
-
-void TextureManager :: RegisterGuiComponent(ComponentType _btype,const char * fileName)
-{
-    if ( _textureMap.find(_btype) == _textureMap.end() )
-    {
-        sf::Texture * p = new sf::Texture();
-        p->loadFromFile(ImageFilePath(fileName));
-        _textureMap.insert(std::make_pair(_btype,TexturePtr(p)));
-        p = nullptr;
-    }
-
-}
-
-
-sf::Texture * TextureManager :: getTexture(ComponentType _btype)
-{
-    std::map<ComponentType,TexturePtr> :: iterator texIt;
-    if ( (texIt = _textureMap.find(_btype) ) == _textureMap.end() ) throw "Button not registered. First register and then load";
-
-    //return *(texIt->second);
-    return (texIt->second).get();
-}
-
-
-std::string TextureManager :: ImageFilePath(const char * fileName)
-{
-    if ( !fileName ) throw "No filename provided to load image from";
-    std::string path(ImagePath);
-    path.append(fileName);
-    return path;
-}
-
-
-#endif
-
-
-//***********************OLD****************************************
-#if(TEXTURE_1)
-void TextureManager :: RegisterGuiComponent(ComponentType _btype,const char * fileName)
-{
-    if ( _textureMap.find(_btype) == _textureMap.end() )
-    {
-        sf::Texture * p = new sf::Texture();
-        p->loadFromFile(ImageFilePath(fileName));
-        _textureMap.insert(std::make_pair(_btype,TexturePtr(p)));
-        p = nullptr;
-    }
-
-}
-
-
-sf::Texture & TextureManager :: getTexture(ComponentType _btype)
-{
-    std::map<ComponentType,TexturePtr> :: iterator texIt;
-    if ( (texIt = _textureMap.find(_btype) ) == _textureMap.end() ) throw "Button not registered. First register and then load";
-
-    return *(texIt->second);
-}
-
-std::string TextureManager :: ImageFilePath(const char * fileName)
-{
-    if ( !fileName ) throw "No filename provided to load image from";
-    std::string path(ImagePath);
-    path.append(fileName);
-    return path;
-}
-#endif
 
 EON

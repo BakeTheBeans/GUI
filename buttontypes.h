@@ -20,7 +20,6 @@ class Texture;
 namespace GUI
 {
 
-#if(BUTTON_4)
 namespace BUTTON
 {
 
@@ -41,6 +40,7 @@ enum ButtonType
     Back
 };
 
+
 enum ImageId
 {
     BUTTON_IMAGE_NAME = 0,
@@ -55,12 +55,17 @@ typedef const char * STRING;
 
 class ButtonTexture
 {
+public:
+    //static BUTTON::ButtonType type;
+    static const bool isPressable = true;
+    static const bool isHoverable = true;
 
 protected:
-    BUTTON::ButtonType type;
+
     std::map<BUTTON::ImageId,std::string> ImageFileNameMap;
 
     ButtonTexture();
+
 
 public:
     virtual ~ButtonTexture() {}
@@ -68,34 +73,43 @@ public:
     virtual sf::Texture * getButtonTexture();
     virtual sf::Texture * getPressedButtonTexture();
     virtual sf::Texture * getHoverButtonTexture();
+
 };
 
 
 struct PlainTexture : public ButtonTexture
 {
+    static const BUTTON::ButtonType type = BUTTON::Plain;
     PlainTexture();
 };
 
 struct FileTexture : public ButtonTexture
 {
+    static const BUTTON::ButtonType type = BUTTON::File;
     FileTexture();
 };
 
+
 struct CancelTexture : public ButtonTexture
 {
+    static const BUTTON::ButtonType type = BUTTON::Cancel;
     CancelTexture();
 };
 
 struct EditTexture : public ButtonTexture
 {
+    static const BUTTON::ButtonType type = BUTTON::Edit;
     EditTexture();
 };
 
 struct MenuTexture : public ButtonTexture
 {
+    static const BUTTON::ButtonType type = BUTTON::Menu;
     MenuTexture();
 };
 
+
+/*
 struct NavigateTexture : public ButtonTexture
 {
     NavigateTexture();
@@ -133,103 +147,16 @@ struct BackTexture : public ButtonTexture
 };
 
 
-#else
-
-
-namespace BUTTON
+class ButtonText : public ButtonTexture
 {
+    static const bool isPressable = true;
+    static const bool isHoverable = true;
 
-enum ButtonType
-{
-    None,
-    Plain,
-    File,
-    Cancel,
-    Stop,
-    Edit,
-    Settings,
-    Menu,
-    Tools,
-    Navigate,
-    Save,
-    Next,
-    Back
-};
 
-enum ImageId
-{
-    BUTTON_IMAGE_NAME = 0,
-    PRESSED_BUTTON_IMAGE_NAME = 1,
-    HOVER_BUTTON_IMAGE_NAME = 2
-};
-
-EON
-
-typedef const char * STRING;
-class ButtonTexture
-{
-
-protected:
-    BUTTON::ButtonType type;
-    std::map<BUTTON::ImageId,std::string> ImageFileNameMap;
-
-    ButtonTexture();
-
-public:
-    virtual ~ButtonTexture() {}
-    std::string getImageName(BUTTON::ImageId id);
 
 };
+*/
 
-struct PlainTexture : public ButtonTexture
-{
-    PlainTexture();
-};
-
-
-//Add Interfaces along the way
-template<typename T>
-class xButton : public IButton
-{
-private:
-    T textureProp;
-
-public:
-    xButton();
-    void ButtonPress() {}
-    void ButtonRelease() {}
-
-};
-
-typedef xButton<PlainTexture> xPlainButton;
-
-template<typename Icon>
-class xIconButton : public xPlainButton
-{
-private:
-    Icon * icon;
-
-    mutable bool setIcon;
-
-
-protected:
-    /*
-     * Set the texture rectangle to focus on the presed-button
-     */
-    //virtual void ButtonPress();
-    //Set the texture rectangle to focus on the released-button
-    //virtual void ButtonRelease();
-    //Adjust icon to fit correctly on button
-    //virtual void setIconPosition();
-
-public:
-    xIconButton();
-    ~xIconButton();
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-};
-
-#endif
 
 EON
 #endif // BUTTONTYPES_H

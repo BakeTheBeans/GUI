@@ -15,7 +15,8 @@ ButtonIcons :: ButtonIcons(int imageIndex) : _icon(0)
     TextureManager::RegisterGuiComponent(buttonIcons, ImageFiles[imageIndex]);
     _icon = TextureManager::getTexture(buttonIcons);
 #else
-    _icon = ResourceManager::getTexture("ButtonIcons");
+    //_icon = ResourceManager::getTexture("ButtonIcons");
+    _icon = ResourceManager::getResource<GUI::Texture>("ButtonIcons");
     this->setTexture(*_icon);
 #endif
 

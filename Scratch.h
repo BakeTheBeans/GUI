@@ -7,7 +7,46 @@
 #include <vector>
 #include <memory>
 
+#include "interfaces.h"
+
 #define PRINT(arg) std::cout << arg << std::endl;
+
+
+class Wolf;
+class Tiger;
+class Lion;
+
+
+
+
+template<typename T>
+struct HasPrintTrait
+{
+static const bool value = true;
+};
+
+template<>
+struct HasPrintTrait<Wolf>
+{
+static const bool value = false;
+};
+
+template<>
+struct HasPrintTrait<Tiger>
+{
+static const bool value = false;
+};
+
+template<>
+struct HasPrintTrait<Lion>
+{
+static const bool value=false;
+};
+
+
+
+
+
 
 
 //Cat, Dog and COw are the means to access resources and are 3rd party classes.
@@ -40,6 +79,40 @@ public:
     Cow(int n) : legs(n) {}
     void Print() { std::cout << "I AM A COW and I have " << legs << "legs" << std::endl; }
 };
+
+
+class Wolf
+{
+private:
+    int legs;
+public:
+    Wolf(int n) : legs(n) {}
+
+};
+
+class Tiger
+{
+private:
+    int legs;
+public:
+    Tiger(int n) : legs(n) {}
+
+};
+
+
+
+class Lion
+{
+private:
+    int legs;
+public:
+    Lion(int n) : legs(n) {}
+
+};
+
+
+
+
 
 
 //Canine, Feline, Bovine are my definitions
@@ -100,6 +173,58 @@ public:
     }
 
 };
+
+
+
+class BakeTheBeans : public GUI::EnclosingBox
+{
+private:
+    virtual void SetSize()
+    {
+
+    }
+
+    virtual void SetPosition()
+    {
+
+    }
+
+public:
+
+    BakeTheBeans() : EnclosingBox() {}
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        this->EnclosingBox::draw(target,states);
+    }
+
+};
+
+template<typename T>
+void Print(T & obj)
+{
+    obj.Print();
+}
+
+template<typename T>
+void Print(T & obj)
+{
+//    obj.Print();
+}
+
+template<typename T>
+void TraitTest()
+{
+    T obj(4);
+
+    if ( HasPrintTrait<T>::value )
+    {
+        std::cout << typeid(T).name() << "  has HasPrint " << std::endl;
+       Print<T>(obj);
+    }
+    else
+        std::cout << typeid(T).name() << " does not have HasPrint " << std::endl;
+}
 
 
 
