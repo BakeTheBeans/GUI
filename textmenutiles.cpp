@@ -10,8 +10,9 @@ const float MenuTiles :: DefaultTileHeight = 30;
 const int MenuTiles :: DefaultFontSize = 15;
 
 
-MenuTiles :: MenuTiles() : EnclosingBox(DefaultTileWidth, DefaultTileHeight, 10, 0), tileText(), font(0), rawText(""), fontSize(10), alignment(GUI::internal::Center)
-{
+MenuTiles :: MenuTiles() : EnclosingBox(DefaultTileWidth, DefaultTileHeight, 10, 0), tileText(), font(0), rawText(""), fontSize(10), alignment(GUI::internal::Center), isSelected(false)
+{    
+
 }
 
 
@@ -137,7 +138,39 @@ void MenuTiles :: setTextColor(sf::Color _color)
     tileText.setColor(_color);
 }
 
+void MenuTiles :: HighLightTile()
+{
+    if ( !isSelected )
+    {
+        sf::Color color = getFillColor();
+        color.a += 100;
+        setFillColor(color);
+        isSelected = true;
+    }
+}
 
+void MenuTiles :: UnHighLightTile()
+{
+    if ( isSelected )
+    {
+        sf::Color color = getFillColor();
+        color.a -= 100;
+        setFillColor(color);
+        isSelected = false;
+    }
+}
+
+
+bool MenuTiles :: InteractWithMouse(sf::Window * window)
+{
+//    HighLightTile();
+//    return false;
+}
+
+void MenuTiles :: MouseLeft(sf::Window * window)
+{
+  //  UnHighLightTile();
+}
 
 void MenuTiles :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {

@@ -26,9 +26,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(CMarkup)
 
 add_executable(ButtonTest Utility.cpp buttonicons.cpp buttontypes.cpp buttonevent.cpp Properties.cpp button.cpp factory.cpp tools.cpp interfaces.cpp menu.cpp scroll.cpp
-textbox.cpp textmenutiles.cpp menupage.cpp directorymenupage.cpp directorymenu.cpp window.cpp  unittest.cpp 
+textbox.cpp textmenutiles.cpp menupage.cpp directorymenupage.cpp directorymenu.cpp window.cpp drawableshapes.cpp mouseprojector.cpp drawingpage.cpp unittest.cpp 
 Test.cpp)
-target_link_libraries(ButtonTest Markup sfml-system sfml-window sfml-graphics)
+target_link_libraries(ButtonTest Markup sfml-system sfml-window sfml-graphics boost_serialization)
 
 #add_test(toDoTest toDo)
 

@@ -7,7 +7,9 @@
 #include <memory>
 #include <string>
 #include "ComplexObject.h"
+//#include "buttonicons.h"
 //#include "define.h"
+#include "icons.h"
 
 namespace sf {
 class RenderTarget;
@@ -15,11 +17,8 @@ class RenderTarget;
 
 namespace GUI {
 
-#if(NEW_DEBUG)
-class DirectoryMenu : /*public EnclosingBox, */public internal::ComplexObject
-#else
-class DirectoryMenu : public EnclosingBox
-#endif
+
+class DirectoryMenu : public internal::ComplexObject, public ICallBackEventHandler
 {
 
 static const float DefaultWidth;
@@ -36,16 +35,22 @@ private:
     //std::map<std::string,IButton*> buttons;
     GUI::Button<GUI::CancelTexture> CancelButton;
     GUI::Button<GUI::FileTexture> FileButton;
+    Icon * icon;
+
 
 private:
 virtual void SetSize(){}
 
 protected:
 //void AddButton(IButton * _button) {}
-#if(NEW_DEBUG)
+
 void ConfigureSubElements();
 std::string getXmlTagName() { return "DirectoryMenu"; }
-#endif
+
+private:
+bool ActionOnPressingReturn();
+void ActionOnPressingDownArrow();
+void ActionOnPressingUpArrow();
 
 public:
     DirectoryMenu();
@@ -54,14 +59,15 @@ public:
     {
         throw "Cannot set size for DirectoryMenu";
     }
-#if(NEW_DEBUG)
-    //void SetUpDisplayFromXml();
-#endif
+
+    void MoveUpDirectory();
+    void ClickUpIcon();
+
+
+    bool InteractWithMouse(sf::Window * window);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };
-
-
 
 
 } //EON

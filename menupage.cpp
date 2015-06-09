@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 
+
 namespace  GUI {
 
 const float  MenuPage ::  DefaultHeight = 400;
@@ -10,7 +11,7 @@ const float  MenuPage ::  DefaultWidth = 300;
 const float MenuPage :: DefaultTileThickness = 20;
 const int MenuPage :: DefaultNumberofTiles = 0;
 
-MenuPage :: MenuPage() : EnclosingBox(), menuTileList(), numOfTiles(0), slabHeight(), StartDisplayIndex(0), start(), stop(), slabHeightWithBorders(), fontSize(0), endOfPage(), tilesConfigured(true)
+MenuPage :: MenuPage() : EnclosingBox(), menuTileList(), numOfTiles(0), slabHeight(), StartDisplayIndex(0), start(), stop(), slabHeightWithBorders(), fontSize(0), endOfPage(), tilesConfigured(true), selectedTile(-1)
  {
     slabHeight = DefaultTileThickness;
     setVerticalDisplaySize(DefaultNumberofTiles);
@@ -141,8 +142,8 @@ MenuPage :: MenuPage() : EnclosingBox(), menuTileList(), numOfTiles(0), slabHeig
   {
 
       SetUpDisplay();
-
-      std::cout << " Display Siz e: " << getVerticalDisplaySize() << std::endl;
+      DEBUG_MESSAGE;
+      std::cout << " Display Size: " << getVerticalDisplaySize() << std::endl;
       setInternalHeight( ( numOfTiles < getVerticalDisplaySize() ?  numOfTiles : getVerticalDisplaySize() ) * slabHeightWithBorders + 2*getMarginSize());
 
       setVerticalPageSize(numOfTiles);
@@ -167,6 +168,77 @@ MenuPage :: MenuPage() : EnclosingBox(), menuTileList(), numOfTiles(0), slabHeig
               count++;
           }
       }
+  }
+
+  /*
+  void MenuPage :: ActionOnPressingReturn()
+  {
+
+
+  }
+*/
+  void MenuPage :: ActionOnPressingDownArrow()
+  {
+      if ( selectedTile == menuTileList.size() - 1 ) return;
+
+      std::cout << " Selected Tile : " << selectedTile << std::endl;
+      if ( selectedTile > -1 )
+      {
+          MenuTiles * p = menuTileList[selectedTile];
+          p->UnHighLightTile();
+      }
+
+      selectedTile++;
+      MenuTiles * p = menuTileList[selectedTile];
+      p->HighLightTile();
+
+  }
+
+  void MenuPage :: ActionOnPressingUpArrow()
+  {
+      if ( selectedTile == 0 ) return;
+
+      if ( selectedTile < menuTileList.size() - 1 )
+      {
+          MenuTiles * p = menuTileList[selectedTile];
+          p->UnHighLightTile();
+      }
+
+      selectedTile--;
+      MenuTiles * p = menuTileList[selectedTile];
+      p->HighLightTile();
+
+
+  }
+
+  int MenuPage :: getMouseSelectedTileIndex(sf::Window * _window)
+  {
+      int count = 0;
+      int index = -1;
+      for(MenuTiles * tile : menuTileList )
+      {          
+          if ( tile->ContainsMouseInside(_window) )
+          {
+              //tile->InteractWithMouse(_window);
+              tile->HighLightTile();
+              if ( sf::Mouse::isButtonPressed(sf::Mouse::Left) )
+              {
+                  index = count;
+                  break;
+              }
+              
+          }
+          //else tile->MouseLeft(_window);
+          else tile->UnHighLightTile();
+          count++;
+      } 
+      
+      return index;
+  }
+
+  bool MenuPage :: InteractWithMouse(sf::Window * _window)
+  {
+    throw "MenuPage::InteractWithMouse not implemented";
   }
 
   void MenuPage :: scrollUp(int offset)

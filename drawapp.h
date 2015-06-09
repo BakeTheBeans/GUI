@@ -1,10 +1,15 @@
 #ifndef DRAWAPP_H
 #define DRAWAPP_H
+#include "ComplexObject.h"
 
-class drawApp
+namespace Draw  {
+
+class DrawApp : public GUI::internal::ComplexObject
 {
 public:
-    drawApp();
+    DrawApp() {}
 };
 
+
+}
 #endif // DRAWAPP_H

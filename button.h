@@ -10,7 +10,7 @@
 #include <utility>
 #include "buttonevent.h"
 #include "button.h"
-//#include "Traits.h"
+#include "Traits.h"
 
 #if(BUTTON_3)
 #include "buttonicons.h"
@@ -66,32 +66,40 @@ public:
     virtual const internal::GUI_Type getGUIType() const=0;
 };
 
-/*
+
+template<typename T> class Button;
+
 namespace internal
 {
 
-template<>
-struct HasSetSize<IButton>
+template<typename T>
+struct HasSetSize< GUI::Button<T>>
 {
     static const bool value = false;
 };
 
-template<>
-struct HasText<IButton>
-{
-    static const bool value = false;
-};
-
-
-template<>
-struct HasSetFillColor<IButton>
+template<typename T>
+struct HasText<GUI::Button<T> >
 {
     static const bool value = false;
 };
 
 
-}//EON
-*/
+template<typename T>
+struct HasSetFillColor<GUI::Button<T> >
+{
+    static const bool value = false;
+};
+
+
+template<typename T>
+struct IsDerivedFromEnclosingBox<GUI::Button<T>>
+{
+    static  const bool value = false;
+};
+
+
+}
 
 //Add Interfaces along the way
 /*

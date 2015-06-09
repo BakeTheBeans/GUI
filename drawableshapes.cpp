@@ -7,6 +7,7 @@
 #include <SFML/Window/Window.hpp>
 #include "serializeshape.h"
 #include <fstream>
+#include <limits>
 
 #define PI 3.14159265358979323846
 
@@ -319,6 +320,57 @@ const sf::Color & VertexShapes :: getEdgeColor() const
     return shape[selectEdgeIndex].color;
 }
 
+void VertexShapes :: MoveShapeUp(int step)
+{
+   for(int i = 0; i < shape.getVertexCount(); i++)
+   {
+       shape[i].position.y -= step;
+   }
+
+}
+
+void VertexShapes :: MoveShapeDown(int step)
+{
+   for(int i = 0; i < shape.getVertexCount(); i++)
+   {
+       shape[i].position.y += step;
+   }
+
+}
+
+void VertexShapes :: MoveShapeRight(int step)
+{
+    for(int i = 0; i < shape.getVertexCount(); i++)
+    {
+        shape[i].position.x += step;
+    }
+}
+
+void VertexShapes :: MoveShapeLeft(int step)
+{
+    for(int i = 0; i < shape.getVertexCount(); i++)
+    {
+        shape[i].position.x -= step;
+    }
+
+}
+
+sf::Vector2f VertexShapes :: getCentroid()
+{
+    float Xcen = 0,Ycen = 0;
+    int n = shape.getVertexCount() - 1;
+    int Vertices =  ( (shape[0].position.x == shape[n].position.x) && (shape[0].position.y == shape[n].position.y) ) ? n : n + 1;
+
+
+    for(int i = 0; i < Vertices; i++)
+    {
+        Xcen += shape[i].position.x;
+        Ycen += shape[i].position.y;
+    }
+
+    return sf::Vector2f(Xcen/Vertices, Ycen/Vertices );
+}
+
 
 void VertexShapes :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -395,7 +447,29 @@ void VertexShapes :: serialize(boost::archive::text_iarchive & ar, const unsigne
 
 }
 
+inline void VertexShapes :: ResetVertices()
+{
+    for( int i = 0 ; i < numOfVertices + 1; i++ ) shape[i].position = sf::Vector2f(0,0);
+}
 
+
+
+std::pair<sf::Vector2f, sf::Vector2f> VertexShapes :: getBounds()
+{
+    std::pair<sf::Vector2f, sf::Vector2f> bound;
+    bound.first = sf::Vector2f(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    bound.second = sf::Vector2f(std::numeric_limits<float>::min(), std::numeric_limits<float>::min() );
+
+    for( int i = 0 ; i < numOfVertices + 1; i++ )
+    {
+        bound.first.x = std::min( bound.first.x, shape[i].position.x );
+        bound.first.y = std::min( bound.first.y, shape[i].position.y );
+        bound.second.x = std::max( bound.second.x, shape[i].position.x );
+        bound.second.y = std::max( bound.second.y, shape[i].position.y );
+    }
+
+    return bound;
+}
 
 ContinuousLine :: ContinuousLine() : VertexShapes(0)
 {
@@ -434,9 +508,11 @@ bool ContinuousLine :: StartDraw(const sf::Window & window)
 
 void ContinuousLine :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-     target.draw(shape);
-     //if ( isSelected() ) target.draw(dashedlines);
-     this->VertexShapes::draw(target, states);
+    if(!stopped)
+    {
+        target.draw(shape);
+        this->VertexShapes::draw(target, states);
+    }
 }
 
 
@@ -450,6 +526,7 @@ BaseShape :: BaseShape(int _numOfVertices) : VertexShapes(_numOfVertices), click
 bool BaseShape :: StartDraw(const sf::Window & window)
 {
 
+    stopped = false;
     sf::Vector2i pos = sf::Mouse::getPosition(window);
     shape[clicks].position.x = pos.x;
     shape[clicks].position.y = pos.y;
@@ -474,19 +551,32 @@ bool BaseShape :: StartDraw(const sf::Window & window)
 
 }
 
-
+void BaseShape :: StopDraw()
+{
+    clicks = 0;
+    stopped = true;
+    ResetVertices();
+}
 
 void BaseShape :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-
-    target.draw(shape);
-    //if ( isSelected() ) target.draw(dashedlines);
-    this->VertexShapes::draw(target, states);
+    if(!stopped)
+    {
+        target.draw(shape);
+        this->VertexShapes::draw(target, states);
+    }
 }
 
+void Rectangle :: StopDraw()
+{
+    pos.first = sf::Vector2i(0,0);
+    pos.second = sf::Vector2i(0,0);
+    BaseShape::StopDraw();
+}
 
 bool Rectangle :: StartDraw(const sf::Window & window)
 {
+    stopped = false;
     if ( sf::Mouse::isButtonPressed(sf::Mouse::Left) )
     {
         clicks++;
@@ -519,6 +609,7 @@ bool Rectangle :: StartDraw(const sf::Window & window)
 
 
 
+
 RegularShape :: RegularShape(int _numOfVertices) : VertexShapes(_numOfVertices), pos(), clicks(0)
 {
     shape = sf::VertexArray( sf::LinesStrip,numOfVertices + 1 );
@@ -529,7 +620,7 @@ RegularShape :: RegularShape(int _numOfVertices) : VertexShapes(_numOfVertices),
 //bool RegularShape :: StartDraw(const sf::Window & window, sf::Event & event)
 bool RegularShape :: StartDraw(const sf::Window & window)
 {
-
+    stopped = false;
     //if ( event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left )
     if ( sf::Mouse::isButtonPressed(sf::Mouse::Left) )
     {
@@ -571,11 +662,22 @@ bool RegularShape :: StartDraw(const sf::Window & window)
 
 }
 
+
+
+inline void RegularShape :: StopDraw()
+{
+    clicks = 0;
+    stopped = true;
+    ResetVertices();
+}
+
 void RegularShape :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-     target.draw(shape);
-     //if ( isSelected() ) target.draw(dashedlines);
-     this->VertexShapes::draw(target, states);
+    if(!stopped)
+    {
+        target.draw(shape);
+        this->VertexShapes::draw(target, states);
+    }
 }
 
 
@@ -629,9 +731,11 @@ inline std::string ContinuousLine :: getSerializationTag()
     return "ContinuousLine";
 }
 
+
 template class Polygon<2>;
 template class Polygon<3>;
 template class Polygon<4>;
+
 
 template class BlockPolygon<3>;
 template class BlockPolygon<4>;

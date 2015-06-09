@@ -64,7 +64,7 @@ public:
    void scrollLeft(int offset) { throw "Not Implemented"; }
    void SetUpWindowDisplay();
    int getVerticalPageSize() { return numOfTextRows; }
-   int getVerticalDisplaySize() { return rowsPerPage; }
+   int getVerticalDisplaySize()     { return rowsPerPage; }
    int getHorizontalPageSize() { std::cout <<  "Not Implemeneted"; }
    int getHorizontalDisplaySize(){ std::cout <<  "Not Implemeneted"; }
 

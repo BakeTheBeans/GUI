@@ -20,7 +20,6 @@ namespace  GUI {
 class MenuPage : public EnclosingBox, public IScrollable
 {
 
-
     static const float DefaultHeight;
     static const float DefaultWidth;    
     static const int DefaultNumberofTiles;
@@ -38,7 +37,7 @@ protected:
     TileIt endOfPage;
 private:
     bool tilesConfigured;
-
+    int selectedTile;
 
 private:
  virtual void SetSize();
@@ -72,6 +71,10 @@ public:
 
  }
 
+protected:
+ //bool ActionOnPressingReturn();
+ void ActionOnPressingDownArrow();
+ void ActionOnPressingUpArrow();
 
 public:
     MenuPage();
@@ -85,14 +88,17 @@ public:
 
 
     void setTileThickness(float _slabHeight);    
-
     void setSize(float _width, float _height );
+    int getSelectedTileIndex() { return selectedTile; }
 
     virtual void scrollUp(int offset);
     virtual void scrollDown(int offset);
     virtual void scrollRight(int offset);
     virtual void scrollLeft(int offset);    
 
+
+    bool InteractWithMouse(sf::Window * window);
+    int getMouseSelectedTileIndex(sf::Window * _window);
 
     void SetUpDisplay();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;

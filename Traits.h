@@ -12,7 +12,8 @@ struct ScrollableEntityTrait
 };
 
 
-template<typename T> class Button;
+//template<typename T> class Button;
+
 
 namespace internal {
 
@@ -44,6 +45,14 @@ struct HasSetFillColor
 };
 
 
+//Need to take this out since most GUI classes will be scalable
+template<typename T>
+struct IsScalable
+{
+    static const bool value = false;
+};
+
+/*
 template<typename T>
 struct HasSetSize< GUI::Button<T>>
 {
@@ -69,7 +78,7 @@ struct IsDerivedFromEnclosingBox<GUI::Button<T>>
 {
     static  const bool value = false;
 };
-
+*/
 
 }//EON
 

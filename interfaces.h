@@ -2,15 +2,16 @@
 #define INTERFACES_H
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+
 #include <iostream>
 
 #include "define.h"   // Not neede - just for debug
-/*
-namespace sf {
 
-class Vector2f;
+namespace sf {
+class Window;
+class Event;
 }
-*/
+
 
 namespace GUI {
 
@@ -82,7 +83,7 @@ public:
     void Configure()
     {
          SetUpDisplay();
-         setUp = true;
+         setUp = true;         
     }
 
 };
@@ -100,13 +101,16 @@ public:
     virtual void ResizeWindow() {}
     virtual void ResetVerticalScrollBar(){}
     virtual void RestHorizontalScrollBar()
-    {
-        DEBUG_MESSAGE
+    {        
         throw "^Not implemented^";
     }
 };
 
 
+/*
+ * This Interface must be implemented if the class - entity - is to be
+ * wrapped with scrollable window.
+ */
 class IScrollable
 {
 
@@ -123,6 +127,12 @@ private:
 protected:
     IScrollWindowCallBack * window;
     void AttachWindow(IScrollWindowCallBack * _window) { window = _window; }
+
+    /*
+     * Perform any operation on the entity held by the ScrollableWindow
+     * The scrollable window takes care of the window and scroll bars.
+     * The logic for the entity goes here.
+     */
     virtual void SetUpWindowDisplay()=0;
 
 
@@ -137,7 +147,7 @@ public:
 
 //public:
 protected:
-    void setVerticalPageSize(int _size) { verticalPageSize = _size; }
+    void setVerticalPageSize(int _size) {verticalPageSize = _size; }
 
     void setVerticalDisplaySize(int _size) { verticalDisplaySize = _size; }
 
@@ -145,10 +155,40 @@ protected:
 
     void setHorizontalDisplaySize(int _size) { horizontalDisplaySize = _size; }
 
+    /*
+     * It is useful to call ConfigureWindow in the entity class
+     *  when changes take place in th epage configuration - configuration
+     * changes refer to changes in page size or display size and not
+     * the page contet itself. Calling ConfigureWindow allos the csrollableWindow
+     * class to adjust the scroll bars.
+     */
     void ConfigureWindow();
 
     void resetVerticalScrollBar();
 
+#if(NEW_DEBUG)
+    /*
+     * This is method is called when scrollable window page
+     * is vertically increased or
+     * reduced in size dynamically eg. while zooming
+     */
+    virtual void changeVerticalPageSpace(int step) { throw "IScollable::CreateVerticalPageSpace not implemented"; }
+
+    /*
+     * This is method is called when scrollable window page
+     * is horizontally increased or
+     * reduced in size dynamically eg. while zooming
+     */
+    virtual void changeHorizontalPageSpace(int step) { throw "IScollable::CreateHorizontalPageSpace not implemented"; }
+
+    virtual void zoom(float scale) { throw "IScollable::zoom not implemented"; }
+
+    virtual void ResetPosition() {throw "IScollable::ResetPosition not implemented"; }
+
+#endif
+
+
+public:
     /*
      *Total heigh/span of the page to be displayed.
      *Required for Vertical Scrolling.
@@ -175,7 +215,14 @@ protected:
      */
     int getHorizontalDisplaySize() { return horizontalDisplaySize; }
 
-
+    /*
+     * Below functions should be defined in the classes
+     * that can used with Scrollable Window. These have the
+     * following job:
+     * 1. Implemnt what must be diplayed when page is scrolled
+     * 2. Logic to stop the scrolling on reaching the start or
+     * end of page.
+     */
     virtual void scrollUp(int offset)=0;
     virtual void scrollDown(int offset)=0;
     virtual void scrollRight(int offset)=0;
@@ -196,7 +243,38 @@ struct ScrollableEntityTrait
 };
 */
 
-class EnclosingBox : public IPosition, public IConfigure, public sf::Drawable
+class IMouseInteraction
+{
+protected:
+    bool isMouseInside;
+    bool mouseInducedChanges;
+
+    IMouseInteraction() : isMouseInside(false), mouseInducedChanges(false) {}
+public:
+
+    virtual bool ContainsMouseInside(sf::Window * window)=0;
+    virtual bool InteractWithMouse(sf::Window * window) {}
+    virtual void MouseLeft(sf::Window * window) {}
+
+};
+
+class IKeyBoardInteraction
+{
+
+protected:
+    IKeyBoardInteraction() {}
+private:
+    virtual bool ActionOnPressingReturn() {}
+    virtual void ActionOnPressingDownArrow() {}
+    virtual void ActionOnPressingUpArrow() {}
+
+public:
+    virtual bool InteractWithKeyBoard(sf::Event & event);
+
+};
+
+
+class EnclosingBox : public IPosition, public IConfigure, public sf::Drawable, public IMouseInteraction, public IKeyBoardInteraction
 {
 protected:
     static const float DefaultBorderSize;
@@ -209,6 +287,7 @@ private:
  float width, height;
  float borderSize;
  float marginSize;
+
 
 private:
 
@@ -324,7 +403,9 @@ public:
 
     float getMarginSize() { return marginSize; }
 
-    virtual bool isResizeable() { return true;}
+    virtual bool isResizeable() { return true;}       
+
+    bool ContainsMouseInside(sf::Window * window);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

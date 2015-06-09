@@ -28,36 +28,84 @@ UnitTest::UnitTest(sf::Event & _event) : event(_event), window(0)
 #endif
 }
 
-
-
+//Draw::MouseProjector ScratchTest::mp = Draw::MouseProjector::getMouseProjector();
 
 #if(SCRATCH_TEST)
 void ScratchTest :: SetUpEnvironment()
 {
-/*
-  cancelButton.setPosition(100,100);
- testObject = new GUI::TestEventClass("Lelouch");
-  cancelButton.buttonEvents.AddEvent( testObject,&GUI::TestEventClass::Print );
-*/
+    Draw::MouseProjector::getMouseProjector().EnableProjection();
+    flag = false;
+    //p = new Draw::ContinuousLine();
+    //p = new Draw::Triangle();
+    //p = new Draw::Line();
+    //p = new Draw::Rectangle();
+    //p = new Draw::Quad();
+    //p = new Draw::Polygon<5>();
+    //p = new Draw::BlockTriangle();
+    //p = new Draw::BlockRectangle();
+    //p = new Draw::BlockQuad();
+    //p = new Draw::BlockPolygon<5>();
+    //p = new Draw::Pentagon();
+    //p = new Draw::Hexagon();
+    //p = new Draw::EquilateralTriangle();
+    p =  new Draw::RegularBlockPolygon<5>();
 
-GUI::GuiFactory factory = GUI::GuiFactory::GetFactoryInstance();
-cancelButton = factory.CreateObject<GUI::Button<GUI::CancelTexture> >();
-cancelButton->setPosition(100,100);
-
+    //p = new Draw::Circle();
+    //p = new Draw::BlockCircle();
+    //p = new Draw::Polygon<4>();
+    //p = new Draw::BlockPolygon<5>();
+    //mp.EnableProjection();
+    Draw::MouseProjector::getMouseProjector().DisableMouseProjection();
 }
 
 void ScratchTest :: InsidePollingImpl()
 {
-    if( sf::Keyboard::isKeyPressed( sf::Keyboard::P))
+
+    if (!flag )
     {
-        cancelButton->Press();
-     //   cancelButton.Release();
+        //flag = rect.StartDraw(*window);
+        flag = p->StartDraw(*window);
     }
 
-    if ( (event.type == sf::Event::KeyPressed) && ( event.key.code == sf::Keyboard::P) ) cancelButton->Press();
+    if ( flag)
+    {
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::P) ) p->scale(1.2,1.2);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::F)) p->BringToFocus(*window);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::C)) p->setColor(sf::Color::Green);
+    }
 
-    if ( (event.type == sf::Event::KeyReleased) && ( event.key.code == sf::Keyboard::P) ) cancelButton->Release();
+    if ( flag )
+    {
+        if ( p->isMouseInside() )
+        {
+            if ( sf::Mouse::isButtonPressed(sf::Mouse::Left) )
+            {
+                if ( ! (p->isSelected()) )p->select();
+                else p->deselect();
+            }
 
+            if( p->isSelected() )
+            {
+                p->drag();
+                //p->rotate();
+                //if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) ) p->rotateByAngle(30);
+            }
+        }
+    }
+
+
+    if ( flag )
+    {
+        Draw::VertexShapes * q = static_cast<Draw::VertexShapes*>(p);
+        if ( q->highlightEdge(*window) && sf::Mouse::isButtonPressed(sf::Mouse::Left) ) q->selectEdge();
+        if ( q->isAnyEdgeSelected() ) q->setEdgeColor(sf::Color::Red );
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::D)) q->deselectEdge();
+    }
+
+
+
+    //mp.Project(*window);
+    Draw::MouseProjector::getMouseProjector().Project(*window);
 }
 
 void ScratchTest :: NoDisplayFunction()
@@ -70,12 +118,321 @@ void ScratchTest :: DisplayObjects()
 {
 
     window->clear();
-    window->draw(*cancelButton);
+    window->draw(*p);
+    window->draw(Draw::MouseProjector::getMouseProjector());
+    window->display();
+}
+
+
+#endif
+
+
+#if(DRAW_APPLICATION_TEST)
+ void DrawAppTest :: SetUpEnvironment() {}
+ void DrawAppTest :: InsidePollingImpl() {}
+
+ void DrawAppTest :: DisplayObjects() {}
+ void DrawAppTest :: NoDisplayFunction() {}
+
+#endif
+
+
+#if(DRAW_TEST)
+
+
+void DrawTest :: SetUpEnvironment()
+{
+
+
+
+#if(Test_1)
+    flag = false;
+
+    Draw::MouseProjector::getMouseProjector().EnableProjection();
+    Draw::ShapeFactory & factory = Draw::ShapeFactory::getShapeFactory();
+
+    //p = factory.CreateInstance<Draw::Triangle>();
+    p = factory.CreateShapeInstance<Draw::Triangle>();
+    //static_cast<Draw::VertexShapes*>(p)->setVertexColor(1,sf::Color::Black);
+
+
+    //p = new Draw::ContinuousLine();
+    //p = new Draw::Triangle();
+    //p = new Draw::Line();
+    //p = new Draw::Rectangle();
+    //p = new Draw::Quad();
+    //p = new Draw::Polygon<5>();
+    //p = new Draw::BlockTriangle();
+    //p = new Draw::BlockRectangle();
+    //p = new Draw::BlockQuad();
+    //p = new Draw::BlockPolygon<5>();
+    //p = new Draw::Pentagon();
+    //p = new Draw::Hexagon();
+    //p = new Draw::EquilateralTriangle();
+    //p =  new Draw::RegularBlockPolygon<5>();
+
+    //p = new Draw::Circle();
+    //p = new Draw::BlockCircle();
+    //p = new Draw::Polygon<4>();
+    //p = new Draw::BlockPolygon<5>();
+    //mp.EnableProjection();
+    Draw::MouseProjector::getMouseProjector().DisableMouseProjection();
+#endif
+
+
+#if(Test_2)
+#if(NEW_DEBUG)
+scrollWindow->setPosition(100,100);
+scrollWindow->setSize(600,600);
+page.Configure();
+scrollWindow->Configure();
+#endif
+#endif
+
+#if(Test_3)
+#if(NEW_DEBUG)
+scrollWindow->setPosition(100,100);
+scrollWindow->setSize(600,600);
+page.Configure();
+scrollWindow->Configure();
+#endif
+#endif
+
+
+}
+
+void DrawTest :: NoDisplayFunction()
+{
+
+    char input;
+    while( std::cin >> input  )
+    {
+        if ( std::tolower(input) == 'u' )   scrollWindow->ScrollUp(5);
+
+        if ( std::tolower(input) == 'd' )  scrollWindow->ScrollDown(5);
+    }
+
+}
+
+
+
+void DrawTest :: InsidePollingImpl()
+{
+
+#if(Test_3)
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+    {
+        page.CreateVerticalPageSpace(10);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Down) )
+    {
+        scrollWindow->ScrollDown(5);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up) )
+    {
+        scrollWindow->ScrollUp(5);
+    }
+
+    std::cout << " Page Size : " << page.getVerticalPageSize() << "     Display Size : " << page.getVerticalDisplaySize() << std::endl;
+
+#endif
+
+#if(Test_2)
+
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::V))
+    {
+        scrollWindow->CreateVerticalPageSpace(10);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::H))
+    {
+        scrollWindow->CreateHorizontalPageSpace(10);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Down) )
+    {
+        scrollWindow->ScrollDown(5);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up) )
+    {
+        scrollWindow->ScrollUp(5);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Right) )
+    {
+        scrollWindow->ScrollRight(5);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Left) )
+    {
+        scrollWindow->ScrollLeft(5);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+    {
+        //page.zoomIn(1.2);
+        scrollWindow->Zoom(1.2);
+    }
+
+    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+    {
+        std::cout << " Zooming Out : " << std::endl;
+        //page.zoomIn(.9);
+        scrollWindow->Zoom(0.9);
+    }
+
+
+    if (!flag )
+    {
+        if ( flags[2] )
+        {
+            flags[0] = page.DrawShape<Draw::Rectangle>(*window);
+            if ( flags[0] ) flags[2] = false;
+        }
+
+        if ( flags[0] )
+        {
+            flags[1] = page.DrawShape<Draw::Triangle>(*window);
+            if ( flags[1] ) flags[0] = false;
+        }
+
+        if ( flags[1] )
+        {
+            flags[2] = page.DrawShape<Draw::BlockHexagon>(*window);
+            if ( flags[2] ) flag = true;
+        }
+
+    }
+
+
+
+    if ( flag )
+    {
+        page.EnablePageLoop();
+    }
+
+
+    //Save and load
+/*
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)  )
+    {
+        page.Save("SavedFile.dr");
+    }
+
+    else if ( sf::Keyboard::isKeyPressed(sf::Keyboard::L)  )
+    {
+        page.Load("SavedFile.dr");
+    }
+*/
+
+
+
+
+#elif(Test_1)
+
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)  )
+    {
+        Draw::ShapeFactory::getShapeFactory().Save( "ShapeSavedFile.dr");
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::L)  )
+    {
+        //p = Draw::ShapeFactory::getShapeFactory().Load( "ShapeSavedFile.dr" );
+        p = Draw::ShapeFactory::getShapeFactory().Load("ShapeSavedFile.dr" );
+
+    }
+
+
+
+    if (!flag )
+    {
+        //flag = rect.StartDraw(*window);
+        flag = p->StartDraw(*window);
+
+    }
+
+
+    if ( flag)
+    {
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::P) ) p->scale(1.2,1.2);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::F)) p->BringToFocus(*window);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::C)) p->setColor(sf::Color::Green);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Down ) ) static_cast<Draw::VertexShapes*>(p)->MoveShapeUp(5);
+        if ( sf::Keyboard::isKeyPressed(sf::Keyboard::Up ) ) static_cast<Draw::VertexShapes*>(p)->MoveShapeDown(5);
+
+    }
+
+    if ( flag )
+    {
+        if ( p->isMouseInside() )
+        {
+            if ( sf::Mouse::isButtonPressed(sf::Mouse::Left) )
+            {
+                if ( ! (p->isSelected()) )p->select();
+                else p->deselect();
+            }
+
+            if( p->isSelected() )
+            {
+                //p->drag();
+                //p->rotate();
+                //if (sf::Keyboard::isKeyPressed(sf::Keyboard::R) ) p->rotateByAngle(30);
+
+            }
+        }
+    }
+
+
+    if ( flag )
+    {
+        Draw::VertexShapes * q = static_cast<Draw::VertexShapes*>(p);
+        //if ( q->highlightEdge(*window) && sf::Mouse::isButtonPressed(sf::Mouse::Left) ) q->selectEdge();
+        //if ( q->isAnyEdgeSelected() ) q->setEdgeColor(sf::Color::Red );
+        //if ( sf::Keyboard::isKeyPressed(sf::Keyboard::D)) q->deselectEdge();
+        /*
+        if( sf::Keyboard::isKeyPressed(sf::Keyboard::S ) )
+        {
+            Draw::VertexShapes * q = static_cast<Draw::VertexShapes*>(p);
+            q->Serialize("ShapeSavedFile.dr");
+        }
+        */
+
+    }
+    Draw::MouseProjector::getMouseProjector().Project(*window);
+#endif
+
+
+
+
+}
+
+
+
+void DrawTest :: DisplayObjects()
+{
+
+    window->clear();
+#if(Test_1)
+    /*if (flag)*/ window->draw(*p);
+    window->draw(Draw::MouseProjector::getMouseProjector());
+#elif(Test_2)
+#if(NEW_DEBUG)
+    window->draw(*scrollWindow);
+#else
+       window->draw(page);
+#endif
+#elif(Test_3)
+    window->draw(*scrollWindow);
+#endif
     window->display();
 }
 
 #endif
-
 
 
 
@@ -317,9 +674,8 @@ void ScrollableTextWindowTest :: SetUpEnvironment()
      textBox.setFontSize(20);
      //textBox.setSize(180,40);
      textBox.setFillColor(COL_BLACK);
-     textBox.setMarginSize(15);     
-     textBox.setTextColor(COL_BLUE);
-
+     textBox.setMarginSize(10);
+     textBox.setTextColor(COL_BLUE);    
     }
 
 
@@ -329,9 +685,9 @@ void ScrollableTextWindowTest :: SetUpEnvironment()
      }
 
 
-    sWindow->setBorderSize(10);
-    sWindow->setMarginSize(15);
-    sWindow->setScrollBarColor(COL_GRAY_16);
+    sWindow->setBorderSize(5);
+    sWindow->setMarginSize(1);
+    sWindow->setScrollBarColor(COL_GREEN);
     sWindow->setScrollStoneColor(COL_GRAY_9);
     sWindow->setScrollBarColor(COL_RED);
     sWindow->setSize(600,200);
@@ -506,16 +862,28 @@ void DirectoryMenuTest:: SetUpEnvironment()
    //dirMenu.setSize(100,300);
    //dirMenu.setPosition(100,100);
    //dirMenu.Configure();
-#if(NEW_DEBUG)
+
     //dirMenu.SetUpDisplayFromXml();
     dirMenu.SetUpFromXml();
-    dirMenu.setPosition(100,100);
-#endif
+    dirMenu.setPosition(100,10);
+
     //dirMenu.Configure();
 }
 
 void  DirectoryMenuTest::  InsidePollingImpl()
 {
+/*
+    if ( dirMenu.ContainsMouseInside(window)  )
+    {
+        dirMenu.InteractWithMouse(window);
+    }
+*/
+    dirMenu.InteractWithKeyBoard(event);
+
+    if ( event.type == sf::Event::KeyPressed )
+    {
+        if ( event.key.code == sf::Keyboard::P ) dirMenu.ClickUpIcon();
+    }
 
 }
 
@@ -682,7 +1050,7 @@ void TextBoxTest :: SetUpEnvironment()
     textBox.setFillColor(COL_BLACK);
     textBox.setBorderColor(COL_GRAY_5);
     textBox.setBorderSize(5);
-    textBox.setMarginSize(10);
+    textBox.setMarginSize(1);
 #endif
     textBox.setTextColor(COL_BLUE);
     textBox.setSize(400,300);
@@ -742,9 +1110,9 @@ void MenuBarTest :: SetUpEnvironment()
     GUI::ButtonFactory::RegisterButton<GUI::MenuTexture>();
 
    GUI::GuiFactory factory = GUI::GuiFactory::GetFactoryInstance();
-   newBar =  factory.CreateObject<GUI::MenuBar>();
-   newBranch =  factory.CreateObject<GUI::MenuBar>();
-   bar =factory.CreateObject<GUI::MenuBar>();
+   //newBar =  factory.CreateObject<GUI::MenuBar>();
+   //newBranch =  factory.CreateObject<GUI::MenuBar>();
+   //bar =factory.CreateObject<GUI::MenuBar>();
 
 
 

@@ -71,7 +71,7 @@ private:
         }
 
         void FireEvent()
-        {
+        {            
             (object->*funcPtr)();
         }
 
@@ -111,6 +111,7 @@ public:
          IEvent* event = new Event<T>(_obj, _funcPtr);
          static_cast<ICallBackEventHandler*>(_obj)->AttachHandle(this);
          eventList.push_back(event);
+
         }
 
     }

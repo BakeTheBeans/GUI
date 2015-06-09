@@ -28,10 +28,13 @@ protected:
     void SetUpDisplay();
     void SetUpNonAdaptableDisplay();
 
+    //void SetUpAdaptableDisplay();
+
     void ConfigureDisplayObject();
     void ConfigureVerticalScrollBar();
     void ConfigureHorizontalScrollBar();
     void ResetVerticalScrollBar();
+    void ResetHorizontalScrollBar();
     virtual void ResizeWindow();
 
 private:
@@ -43,12 +46,18 @@ private:
 
 public:
   ScrollableWindow(T & scrollableObj);
-  virtual ~ScrollableWindow()  {}
+  virtual ~ScrollableWindow()  {}  
 
   void setScrollBarColor(sf::Color _color);
   void setScrollStoneColor(sf::Color _color);
   void setVerticalDisplaySize(unsigned int _dispSize);
   void setHorizontalDisplaySize(unsigned int _dispSize);
+#if(NEW_DEBUG)
+  void CreateVerticalPageSpace(int step);
+  void CreateHorizontalPageSpace(int step);
+  void Zoom(float scale);
+
+#endif
   void ScrollUp(int offset);
   void ScrollDown(int offset);
   void ScrollRight(int offset);

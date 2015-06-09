@@ -5,10 +5,10 @@
 #include "ScartchMe.h"
 
 #if(SCRATCH_TEST)
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
-#include "button.h"
-
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
+#include "drawableshapes.h"
+#include "mouseprojector.h"
 
 #else
 #include "button.h"
@@ -58,6 +58,19 @@
 #include "directorymenupage.h"
 #endif
 
+#if(DRAW_TEST)
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
+#include "drawableshapes.h"
+#include "mouseprojector.h"
+#include "shapefactory.h"
+#include "drawingpage.h"
+#include "window.h"
+#endif
+
+#if(DRAW_APPLICATION_TEST)
+#include "drawapp.h"
+#endif
 
 #define NO_DISPLAY 0
 #define U_BUTTON_PRESS(arg) event.key.code == sf::Keyboard::arg
@@ -121,13 +134,14 @@ class  ScratchTest : public UnitTest
 {
 
     //******Create your variables here to **********
-     //GUI::Button<GUI::CancelTexture> * cancelButton;
-    GUI::IButton * cancelButton;
-     GUI::TestEventClass * testObject;
+
+    Draw::IDrawableShapes * p;
+    //static Draw::MouseProjector mp;
+    bool flag;
     //**********************************************
 
 public:
-     ScratchTest(sf::Event & _event) : UnitTest(_event), cancelButton(), testObject(0)
+     ScratchTest(sf::Event & _event) : UnitTest(_event)
      {
 
 
@@ -135,15 +149,115 @@ public:
 
      ~ScratchTest()
      {
-
+          if(p) delete p;
      }
 
      virtual void SetUpEnvironment();
      virtual void InsidePollingImpl();
      //virtual void CleanUp();
      virtual void DisplayObjects();
-    virtual void NoDisplayFunction();
+     virtual void NoDisplayFunction();
 };
+#endif
+
+#if(DRAW_APPLICATION_TEST)
+class DrawAppTest : public UnitTest
+{
+
+    //******Create your variables here to **********
+
+    Draw::DrawApp app;
+
+
+    //**********************************************
+
+public:
+     DrawAppTest(sf::Event & _event) : UnitTest(_event)
+     {
+
+
+     }
+
+     ~DrawAppTest ()
+     {
+          if(p) delete p;
+     }
+
+     virtual void SetUpEnvironment();
+     virtual void InsidePollingImpl();
+     virtual void DisplayObjects();
+     virtual void NoDisplayFunction();
+};
+#endif
+
+
+
+
+#if(DRAW_TEST)
+
+
+
+class  DrawTest : public UnitTest
+{
+
+    //******Create your variables here to **********
+#if(Test_1)
+    Draw::IDrawableShapes * p;
+    bool flag;
+#elif(Test_2)
+    Draw::DrawingPage page;
+#if(NEW_DEBUG)
+    GUI::ScrollableWindow<Draw::DrawingPage> * scrollWindow;
+    bool flags[3];
+    bool flag;
+#endif
+
+#elif(Test_3)
+#if(NEW_DEBUG || NO_DISPLAY)
+    Draw::DrawingPage page;
+    GUI::ScrollableWindow<Draw::DrawingPage> * scrollWindow;
+#endif
+#endif
+    //bool flag;
+    //**********************************************
+
+public:
+#if(Test_1)
+    DrawTest(sf::Event & _event) : UnitTest(_event), p(0), flag(false)
+#elif(Test_2)
+    DrawTest(sf::Event & _event) : UnitTest(_event), page(), flags(), flag(false)
+  #elif(Test_3)
+    DrawTest(sf::Event & _event) : UnitTest(_event), page(), scrollWindow(0)
+#endif
+     {
+#if(Test_2)
+            flags[0] = flags[1] = false;
+            flags[2] = true;
+#if(NEW_DEBUG)
+            scrollWindow = new GUI::ScrollableWindow<Draw::DrawingPage>(page);
+#endif
+#endif
+
+#if(Test_3)
+            scrollWindow = new GUI::ScrollableWindow<Draw::DrawingPage>(page);
+#endif
+     }
+
+
+
+
+     ~DrawTest()
+     {
+//          if(p) delete p;
+     }
+
+     virtual void SetUpEnvironment();
+     virtual void InsidePollingImpl();
+     virtual void DisplayObjects();
+     virtual void NoDisplayFunction();
+};
+
+
 #endif
 
 #if(DIRECTORYMENUPAGE_TEST)

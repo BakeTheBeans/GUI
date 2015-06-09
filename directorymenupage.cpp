@@ -50,7 +50,24 @@ const int DirectoryMenuPage :: MaxDisplayTiles = 15;
 
  }
 
-  bool DirectoryMenuPage  :: MoveUpDirectory()
+
+ void DirectoryMenuPage  :: ChangeDirectory(std::string newPath)
+ {
+
+     std::cout << " Current Directory : " << curDir << std::endl;
+     std::cout << " Ne w Directory : " << newPath << std::endl;
+     if ( curDir.compare(newPath) != 0 )
+     {
+         curDir = newPath;
+         infoList.clear();
+         infoList = Directory::getDirectoryContents(curDir);
+         isDirectoryChanged = true;
+         SetUpNewDirectory();
+         ConfigureWindow();
+     }
+ }
+
+ bool DirectoryMenuPage  :: MoveUpDirectory()
   {
      resetVerticalScrollBar();
 
@@ -78,6 +95,47 @@ const int DirectoryMenuPage :: MaxDisplayTiles = 15;
   bool DirectoryMenuPage  :: MoveIntoDirectory(std::string folder)
   {
       throw "Not Implemented";
+  }
+
+  bool DirectoryMenuPage :: InteractWithMouse(sf::Window * window)
+  {
+      int index = getMouseSelectedTileIndex(window);
+      if ( index < 0 )  return false;
+      DirectoryInfo & info =  infoList[index];
+      if ( info.type == info.Directory )
+      {
+          std::string newPath = curDir + "/" + info.fileName;
+          ChangeDirectory(newPath);
+          return true;
+      }
+      else return false;
+  }
+
+
+  inline bool DirectoryMenuPage :: ActionOnPressingReturn()
+  {
+    //MenuPage::ActionOnPressingReturn();
+      int index = getSelectedTileIndex();
+      if ( index < 0 ) return false;
+      DirectoryInfo & info = infoList[index];
+      if ( info.type == DirectoryInfo::Directory )
+      {
+          std::string newPath = curDir + "/" + info.fileName;
+          ChangeDirectory(newPath);
+          return true;
+      }
+      else return false;
+
+  }
+
+  inline void DirectoryMenuPage :: ActionOnPressingDownArrow()
+  {
+    MenuPage::ActionOnPressingDownArrow();
+  }
+
+  inline void DirectoryMenuPage :: ActionOnPressingUpArrow()
+  {
+    MenuPage::ActionOnPressingUpArrow();
   }
 
 

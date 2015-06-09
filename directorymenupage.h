@@ -6,6 +6,7 @@
 #include "window.h"
 #include "tools.h"
 #include "Traits.h"
+#include "buttonevent.h"
 
 namespace  GUI {
 
@@ -28,7 +29,14 @@ public:
     ~DirectoryMenuPage() {}
     bool MoveUpDirectory();
     bool MoveIntoDirectory(std::string folder);
-    const std::string & getCurrentDirectoryName() { return curDir; }
+    void ChangeDirectory(std::string newPath);
+    const std::string & getCurrentDirectoryName() { return curDir; }    
+    bool InteractWithMouse(sf::Window * window);
+
+    bool ActionOnPressingReturn();
+    void ActionOnPressingDownArrow();
+    void ActionOnPressingUpArrow();
+
 };
 
 

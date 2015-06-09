@@ -1,5 +1,6 @@
 #include "scroll.h"
 
+
 namespace GUI {
 
 const sf::Color ScrollBar :: DefaultScrollBarFrameColor = COL_GRAY_3;
@@ -8,7 +9,7 @@ const sf::Color ScrollBar :: DefaultScrollStoneColor = COL_GRAY_9;
 const float ScrollBar :: DefaultScrollBarWidth  = 8;
 
 
-ScrollBar :: ScrollBar(internal::AlignmentType _alignment) : EnclosingBox(), alignment(_alignment),stoneWidth(),stoneHeight(), stone(), displaySize(), pageSize(), currentStonePos(1)
+ScrollBar :: ScrollBar(internal::AlignmentType _alignment) : EnclosingBox(), alignment(_alignment),stoneWidth(),stoneHeight(), stone(), displaySize(), pageSize(), currentStonePos(-1)
 {
     this->EnclosingBox::setBorderColor(DefaultScrollBarFrameColor);
     this->EnclosingBox::setFillColor(DefaultScrollFillColor);
@@ -16,7 +17,7 @@ ScrollBar :: ScrollBar(internal::AlignmentType _alignment) : EnclosingBox(), ali
 }
 
 
-ScrollBar :: ScrollBar(internal::AlignmentType _align,float barWidth, float barHeight, float barThickness) : EnclosingBox(), alignment(_align), stoneWidth(), stoneHeight(), stone(), displaySize(0), pageSize(0), currentStonePos(1)
+ScrollBar :: ScrollBar(internal::AlignmentType _align,float barWidth, float barHeight, float barThickness) : EnclosingBox(), alignment(_align), stoneWidth(), stoneHeight(), stone(), displaySize(0), pageSize(0), currentStonePos(-1)
 {
     if ( !barThickness) throw "ScrollBar thickness must be non-zero.";
     if ( (alignment == internal::Horizontal && (barWidth < barHeight) )|| ( alignment == internal::Vertical && (barHeight < barWidth) ) )
@@ -45,20 +46,21 @@ void ScrollBar ::  SetUpDisplay()
 {
     setDisplaySize(displaySize);
     setStoneSize();
+    if ( currentStonePos == -1 ) currentStonePos = displaySize;
+    std::cout << "SCROLL BAR :  Page Size : " << pageSize << "   Display size : " <<  displaySize << "   Scroll Position : " << currentStonePos << std::endl;
+
 }
 
 void ScrollBar :: SetSize()
 {
-
-
     if (alignment == internal::Vertical )
     {
         if( getInternalHeight() < getInternalWidth() ) throw "Scroll Bar dimensions not compatible with the alignment type.";
         stoneWidth = getInternalWidth();
-
     }
     else
     {
+
         if( getInternalHeight() > getInternalWidth() ) throw "Scroll Bar dimensions not compatible with the alignment type.";
         stoneHeight = getInternalHeight();
     }
@@ -72,17 +74,16 @@ void ScrollBar :: setStoneSize()
 {
     if (alignment == internal::Vertical )
     {
-
         float _size = (displaySize * this->EnclosingBox::getInternalHeight() )/pageSize;
+        std::cout << " Size of stone : " << _size << std::endl;
         stoneHeight = _size > getInternalHeight() ? getInternalHeight() : _size;
 
     }
 
     else
-    {
+    {        
         float _size = (displaySize * getInternalWidth() )/pageSize;
         stoneWidth = _size > getInternalWidth() ? getInternalWidth() : _size;
-
     }    
     stone.setSize(sf::Vector2f(stoneWidth,stoneHeight));
 }
@@ -97,33 +98,59 @@ void ScrollBar :: setPageSize(int _size)
 {
     pageSize = _size;
     setStoneSize();
+    if ( alignment == internal::Vertical ) { std::cout << "Setting Vertical Page Size.................." << std::endl; }
+    else if ( alignment == internal::Horizontal) {std::cout << "Setting Horizontal Page Size.................." << std::endl; }
+    DEBUG_MESSAGE
+    updateStonePosition();
 }
+
+#if(NEW_DEBUG)
+
+void  ScrollBar :: UpdateCurrentStonePosition()
+{
+    currentStonePos = displaySize;
+    std::cout << " Current Stone Position : " << currentStonePos << std::endl;
+}
+
+void ScrollBar :: ScrollToStart()
+{
+    reset();
+}
+
+void ScrollBar :: ScrollToEnd()
+{
+    currentStonePos = pageSize;
+    updateStonePosition();
+}
+
+#endif
 
 void ScrollBar :: scroll(float dist, ScrollBar::Direction _dir)
 {
 
+    //std::cout << "SCROLL BAR WARNING" << "   offset in sroll bar : "  << dist << std::endl;
     switch (_dir)
     {
     case ScrollBar::up:
-        if ( currentStonePos == 1) return;
-        currentStonePos = currentStonePos - dist < 1 ? 1 : currentStonePos - dist;
+        if ( currentStonePos <= displaySize) return;
+        currentStonePos = (currentStonePos - dist) < displaySize ? displaySize : currentStonePos - dist;
         break;
 
     case ScrollBar::down:
-        if (currentStonePos == pageSize - displaySize ) return;
-        currentStonePos =  currentStonePos + dist > pageSize ? pageSize : currentStonePos + dist;
+        if (currentStonePos >= pageSize ) return;
+        currentStonePos =  ( currentStonePos + dist ) > pageSize ? pageSize : currentStonePos + dist;
         break;
 
     case ScrollBar::left:
-        if ( currentStonePos == 1) return;
-        currentStonePos = currentStonePos - dist < 1 ? 1 : currentStonePos - dist;
+        if ( currentStonePos <= displaySize) return;
+        currentStonePos = (currentStonePos - dist) < displaySize ? displaySize : currentStonePos - dist;
         break;
-
 
     case ScrollBar::right:
-        if (currentStonePos == pageSize ) return;
-        currentStonePos =  currentStonePos + dist > pageSize ? pageSize : currentStonePos + dist;
+        if (currentStonePos >= pageSize ) return;
+        currentStonePos =  ( currentStonePos + dist ) > pageSize ? pageSize : currentStonePos + dist;
         break;
+
 
     default:
         throw "Unrecognized type";
@@ -131,31 +158,72 @@ void ScrollBar :: scroll(float dist, ScrollBar::Direction _dir)
     }
 
     updateStonePosition();
+
+    std::cout << "WINDOW SCROLL   Page Size " << pageSize << "    Display Size  : " << displaySize << "     Scroll POsition  " << currentStonePos << std::endl;
+
 }
+
+
 
 void ScrollBar :: updateStonePosition()
 {
 
+    DEBUG_MESSAGE
+            std::cout << " Page Size   " << pageSize << "      " <<  " DIsplay Size    " << displaySize << std::endl;
+
+
+    if (pageSize == displaySize )
+    {
+        //DEBUG_MESSAGE
+        currentStonePos = displaySize;
+        //return;
+    }
+
+
     if ( alignment == internal::Vertical)
     {
+
+        std::cout << " Updating Stone Position for Vertical Scroll Bar " << std::endl;
+
         float holderTop = this->EnclosingBox::getInternalPosition().y;
         float holderBottom = holderTop + this->EnclosingBox::getInternalHeight() - stoneHeight;
-        float stoneTopPos = 1;
+        float stoneTopPos = 0;
         float stoneBottomPos = pageSize - displaySize;
+        std::cerr << "Stone Height : " << stoneHeight << std::endl;
 
-        float pos = holderTop +  (holderBottom - holderTop) * (currentStonePos - stoneTopPos)/(stoneBottomPos - stoneTopPos);
-        stone.setPosition( stone.getPosition().x,  pos );
+
+        float mappedCurrentPos = currentStonePos - displaySize;
+
+
+        float pos = pageSize != displaySize ? ( holderTop +  (holderBottom - holderTop) * ( mappedCurrentPos - stoneTopPos)/(stoneBottomPos - stoneTopPos) ) : holderTop;
+
+        if( ( pos - holderTop +  stoneHeight) > getInternalHeight() )
+        {
+            pos = pos - stoneHeight + (2*displaySize - currentStonePos);
+        }
+
+
+        std::cerr << " Mapped Position : " << ( pos - holderTop) << std::endl;
+
+        //( (currentStonePos - displaySize + stoneHeight) > getInternalHeight() ) ? displaySize + getInternalHeight() - currentStonePos : stoneHeight;
+
+
+        stone.setPosition( stone.getPosition().x,  pos );        
 
     }
 
     else if ( alignment == internal::Horizontal )
     {
+        std::cout << " Updating Stone Position for Horizontal Scroll Bar " << std::endl;
+
         float holderLeft = getInternalPosition().x;
         float holderRight = holderLeft + getInternalWidth() - stoneWidth;
-        float stoneLeftPos = 1;
+        float stoneLeftPos = 0;
         float stoneRightPos = pageSize - displaySize;
+        float mappedCurrentPos = currentStonePos - displaySize;
 
-        float pos = holderLeft + (holderRight - holderLeft)*(currentStonePos - stoneLeftPos)/(stoneRightPos - stoneLeftPos);
+        float pos = holderLeft +  (holderRight - holderLeft) * ( mappedCurrentPos - stoneLeftPos)/(stoneRightPos - stoneLeftPos);
+
         stone.setPosition( pos, stone.getPosition().y);
     }
 
@@ -165,9 +233,9 @@ void ScrollBar :: updateStonePosition()
 
 void ScrollBar :: reset()
 {
-    currentStonePos = 1;
-    updateStonePosition();
 
+    currentStonePos = displaySize;
+    updateStonePosition();
 }
 
 void ScrollBar :: SetPosition()

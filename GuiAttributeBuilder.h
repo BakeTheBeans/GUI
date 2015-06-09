@@ -17,7 +17,9 @@ struct Attributes
     typedef std::pair<int,bool> INT;
     typedef std::pair<int,bool> CHAR;
     typedef std::pair<float,bool> FLOAT;
+    typedef std::pair<std::pair<float,float>, bool > FFLOAT;
     typedef std::pair<std::string,bool> STRING;
+
     INT Height;
     INT Width;
     FLOAT Border;
@@ -29,6 +31,7 @@ struct Attributes
     STRING Text;
     INT FontSize;
     CHAR TextAlignment;
+    FFLOAT Scale;
 
 };
 
@@ -38,12 +41,42 @@ struct SetSizeAttributes
     static void Build(Attributes & att, T & obj)
     {
         if ( att.Height.second && att.Width.second )
-        {
-            DEBUG_MESSAGE
+        {            
             obj.setSize(att.Width.first, att.Height.first);
+        }
+
+    }
+};
+
+template<typename T>
+struct SetSizeAttributes<T,false>
+{
+    static void Build(Attributes & att, T & obj)
+    {
+
+    }
+};
+
+template<typename T, bool U = true>
+struct SetScaleAttributes
+{
+    static void Build(Attributes & att, T & obj)
+    {
+        if ( att.Scale.second )
+        {
+            obj.scale(att.Scale.first.first, att.Scale.first.second );
         }
     }
 };
+
+template<typename T>
+struct SetScaleAttributes<T,false>
+{
+    static void Build(Attributes & att, T & obj)
+    {
+    }
+};
+
 
 template<typename T,bool U = true>
 struct SetPositionAttributes
@@ -51,8 +84,7 @@ struct SetPositionAttributes
     static void Build(Attributes & att, T & obj)
     {
         if( att.PosX.second && att.PosY.second )
-        {
-            DEBUG_MESSAGE
+        {            
             obj.setPosition( att.PosX.first, att.PosY.first);
         }
     }
@@ -137,6 +169,8 @@ class AttributeBuilder
     {
 
         SetSizeAttributes<T,internal::HasSetSize<T>::value>::Build(att,obj);
+
+        SetScaleAttributes<T, internal::IsScalable<T>::value>::Build(att,obj);
 
         //SetPositionAttributes<T>::Build(att,obj);
 
@@ -237,6 +271,15 @@ public:
             {
                 att.FontSize.first = atoi( value.c_str() );
                 att.FontSize.second = true;
+            }
+
+            else if ( attrib == "Scale" )
+            {
+                std::stringstream ss(value);
+                std::string token;
+                if ( std::getline(ss,token,',' ) ) att.Scale.first.first = atof( token.c_str() );
+                if ( std::getline(ss,token,',' ) ) att.Scale.first.second = atof( token.c_str() );
+                att.Scale.second = true;
             }
 
             j++;

@@ -121,7 +121,7 @@ void TextBox :: AlignText()
             dummyString.erase(dummyString.begin(), dummyString.begin() +insertIndex);
 
             numOfTextRows++;
-            std::cout << textString;
+            //std::cout << textString;
         }
         i++;
         prevSize = limit;
@@ -140,12 +140,13 @@ void TextBox :: SetUpDisplay()
 {
     SetSize();
     SetPosition();
-    SetUpText();
+    SetUpText();    
 }
 
 void TextBox :: SetUpWindowDisplay()
 {
     SetUpDisplay();
+    ConfigureWindow();
     setUp = true;
 }
 
@@ -174,8 +175,7 @@ void TextBox :: scrollUp(int offset)
     startIndex = decrement < 0 ?  0 : decrement;
     stopIndex = startIndex + rowsPerPage - 1;
 
-    SetUpText();
-    //SetUpDisplay();
+    SetUpText();    
 }
 
 void TextBox :: scrollDown(int offset)
@@ -186,7 +186,6 @@ void TextBox :: scrollDown(int offset)
     stopIndex = startIndex + rowsPerPage - 1;
 
     SetUpText();
-    //SetUpDisplay();
 }
 
 void TextBox :: setFontSize(int num)

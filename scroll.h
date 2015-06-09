@@ -62,6 +62,11 @@ public:
 
     void setAlignment(internal::AlignmentType _alignment){}
     void setStoneColor(sf::Color sColor) { stone.setFillColor(sColor); }
+#if(NEW_DEBUG)
+    void UpdateCurrentStonePosition();
+    void ScrollToStart();
+    void ScrollToEnd();
+#endif
 
     void setDisplaySize(int _size);
     void setPageSize(int _size);
@@ -71,6 +76,7 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };
+
 
 }//EON
 #endif // SCROLL_H

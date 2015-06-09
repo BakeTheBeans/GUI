@@ -2,7 +2,10 @@
 #include "define.h"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Window.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Event.hpp>
 
 namespace GUI {
 
@@ -33,6 +36,22 @@ void IScrollable :: WindowDisplay()
 }
 
 
+bool IKeyBoardInteraction :: InteractWithKeyBoard(sf::Event & event)
+{
+    if ( event.type == sf::Event::KeyPressed )
+    {
+        if ( event.key.code == sf::Keyboard::Return )
+            ActionOnPressingReturn();
+
+        if( event.key.code == sf::Keyboard::Up )
+            ActionOnPressingUpArrow();
+
+        if ( event.key.code == sf::Keyboard::Down )
+            ActionOnPressingDownArrow();
+    }
+}
+
+
 const float EnclosingBox :: DefaultBorderSize = 3;
 const sf::Color EnclosingBox :: DefaultBorderColor = COL_GRAY_5;
 const float EnclosingBox :: DefaultMarginSize = 1;
@@ -41,7 +60,6 @@ const sf::Color EnclosingBox :: DefaultFillColor = COL_GRAY_12;
 
 EnclosingBox :: EnclosingBox() : box(), width(), height(),  borderSize(DefaultBorderSize), marginSize(DefaultMarginSize)
 {
-
     box.setOutlineThickness(borderSize);
     box.setOutlineColor(DefaultBorderColor);
     box.setFillColor(DefaultFillColor);
@@ -111,6 +129,13 @@ void  EnclosingBox ::  setPosition(float posX, float posY)
     SetPosition();
     //setUp = false;
 }
+
+bool  EnclosingBox :: ContainsMouseInside(sf::Window * window)
+{
+    const sf::Vector2i & Mpos = sf::Mouse::getPosition();
+    return box.getGlobalBounds().contains( Mpos.x - window->getPosition().x, Mpos.y - window->getPosition().y  );
+}
+
 
 void EnclosingBox :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {

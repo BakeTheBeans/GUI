@@ -206,11 +206,6 @@ void Print(T & obj)
     obj.Print();
 }
 
-template<typename T>
-void Print(T & obj)
-{
-//    obj.Print();
-}
 
 template<typename T>
 void TraitTest()
@@ -227,6 +222,32 @@ void TraitTest()
 }
 
 
+
+
+class Factory
+{
+
+
+private:
+    Factory()
+    {
+        std::cout << "Constructed" << std::endl;
+    }
+
+
+
+    Factory(const Factory & _obj);
+    Factory & operator=(const Factory & _obj);
+
+public:
+    static Factory &  getFactory()
+    {
+        static Factory obj;
+        return obj;
+    }
+
+
+};
 
 
 #endif // SCRATCH_H

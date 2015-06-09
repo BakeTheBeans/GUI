@@ -3,7 +3,7 @@
 #include "ScartchMe.h"
 #include <algorithm>
 #include <iterator>
-
+#include <cmath>
 
 #define STOP_ON_PRESSING_SPACEBAR if ( event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space )\
 {\
@@ -13,13 +13,12 @@
 //#define SCRATCH 1
 
 #if(SCRATCH)
-#include <sstream>
-//#include "Utility.h"
-//#include "Scratch.h"
+#include "Scratch.h"
 #else
 #include "Utility.h"
 #include "unittest.h"
 #endif
+
 
 
 
@@ -29,17 +28,8 @@ int main()
 
 #if(SCRATCH)
 
-    std::string ss = "0x101010";
-    std::stringstream foo;
-
-    foo << std::hex << ss;
-
-    int num;
-    foo >> num;
-
-    std::cout << "Number : " << num << std::endl;
-
-
+    std::vector<int> foo = {1,45,78,100,56,298.190,2876};
+    std::min(foo.begin(),foo.end());
 
 #else
     sf::Event event;
@@ -79,7 +69,9 @@ try{
 #elif(DIRECTORYMENUPAGE_TEST)
         Test = new DirectoryMenuPageTest(event);
 #elif(DirectoryMenuTest)
-        Test = new DirectoryMenuTest(event);
+       Test = new DirectoryMenuTest(event);
+#elif(DRAW_TEST)
+        Test = new DrawTest(event);
 #endif
 
     Test->SetUpEnvironment();

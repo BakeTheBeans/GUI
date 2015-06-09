@@ -26,6 +26,7 @@ class MenuTiles :  public EnclosingBox
     std::string rawText;
     int fontSize;
     internal::TextAlignment alignment;
+    bool isSelected;
 
 protected:
     void ResizeText();
@@ -48,10 +49,16 @@ public:
     void setTextAlignment(internal::TextAlignment _align);
     void setTextColor(sf::Color _color);
 
+    void HighLightTile();
+    void UnHighLightTile();
+
     const sf::Color & getTextColor() { return tileText.getColor(); }
     float getFontSize() const { return fontSize; }
     const std::string getText()  { return tileText.getString(); }
 
+
+    bool InteractWithMouse(sf::Window * window);
+    void MouseLeft(sf::Window * window);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

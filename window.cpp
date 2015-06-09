@@ -1,6 +1,7 @@
 #include "window.h"
 #include "menupage.h"
 #include "directorymenupage.h"
+#include "drawingpage.h"
 
 namespace GUI {
 
@@ -37,12 +38,14 @@ void ScrollableWindow<T> :: SetSizeIfFixed()
 
 template<typename T>
 void ScrollableWindow<T> :: SetSize()
-{        
+{
+    /*
     if ( ScrollableEntityTrait<T>::CanAdaptToWindow  )
     {
         std::cerr << "Cannot set size for window holding the current type" << std::endl;
         return;
     }
+    */
 
     if ( !DisplayObj.isResizeable() )
     {
@@ -136,6 +139,52 @@ void ScrollableWindow<T> :: SetUpNonAdaptableDisplay()
 
 }
 
+/*
+template<typename T>
+void ScrollableWindow<T> :: SetUpAdaptableDisplay()
+{
+
+    if ( isConfigured() ) return;
+    DisplayObj.setBorderSize(0);
+    setMarginSize(0);
+
+    SetSize();
+    SetPosition();
+
+    DisplayObj.windowFlag = true;
+    DisplayObj.WindowDisplay();
+    DisplayObj.windowFlag = false;
+
+    hScroll.Configure();
+    vScroll.Configure();
+
+    std::cout << "Inside Scroll Window : Display Size" <<  DisplayObj.getVerticalDisplaySize() << "   Vertical Page Size   " << DisplayObj.getVerticalPageSize() << std::endl;
+
+
+    vScroll.setPageSize( DisplayObj.getVerticalPageSize() );
+    vScroll.setDisplaySize(DisplayObj.getVerticalDisplaySize() );
+
+    hScroll.setPageSize( DisplayObj.getHorizontalPageSize());
+    hScroll.setDisplaySize( DisplayObj.getHorizontalDisplaySize());
+
+    if ( !DisplayObj.isConfigured())
+    std::cout << "Display Objcet ScrollBar not configured" << std::endl;
+
+}
+*/
+
+/*
+template<typename T>
+void ScrollableWindow<T> :: SetUpDisplay()
+{
+    //setupdisplay<ScrollableEntityTrait<T>::CanAdaptToWindow>();
+    //above won't work because function specialization doesn't work
+    //Anywa the use of Trait  here is just rubbish.
+    if ( ScrollableEntityTrait<T>::CanAdaptToWindow ) SetUpAdaptableDisplay();
+    else SetUpNonAdaptableDisplay();
+}
+*/
+
 template<typename T>
 void ScrollableWindow<T> :: SetUpDisplay()
 {
@@ -164,15 +213,16 @@ void ScrollableWindow<T> :: SetUpDisplay()
 
 
     vScroll.setPageSize( DisplayObj.getVerticalPageSize() );
-    vScroll.setDisplaySize(DisplayObj.getVerticalDisplaySize() );  
+    vScroll.setDisplaySize(DisplayObj.getVerticalDisplaySize() );
 
     hScroll.setPageSize( DisplayObj.getHorizontalPageSize());
     hScroll.setDisplaySize( DisplayObj.getHorizontalDisplaySize());
 
-    if ( !DisplayObj.isConfigured())
-    std::cout << "Display Objcet ScrollBar not configured" << std::endl;
+    if ( !DisplayObj.isConfigured()) DisplayObj.Configure();
+    //std::cout << "Display Objcet ScrollBar not configured" << std::endl;
 
 }
+
 
 
 template<typename T>
@@ -217,34 +267,44 @@ void ScrollableWindow<T> :: ResetVerticalScrollBar()
     vScroll.reset();
 }
 
+template<typename T>
+void ScrollableWindow<T> :: ResetHorizontalScrollBar()
+{
+    hScroll.reset();
+}
 
 template<typename T>
 void ScrollableWindow<T> :: ScrollUp(int offset)
 {
+    static int count = 0;
+    if ( ++count == 1 )  std::cout << " Scrolling Up............" << std::endl;
    DisplayObj.scrollUp(offset);
    vScroll.setPageSize( DisplayObj.getVerticalPageSize() );
    vScroll.setDisplaySize( DisplayObj.getVerticalDisplaySize() );
    vScroll.scroll(offset, ScrollBar::up);
+   std::cout << std::endl;
 }
 
 template<typename T>
 void ScrollableWindow<T> ::  ScrollDown(int offset)
 {
+    static int count = 0;
+    if ( ++count == 1 )  std::cout << " Scrolling Down............" << std::endl;
     DisplayObj.scrollDown(offset);
     vScroll.setPageSize( DisplayObj.getVerticalPageSize() );
     vScroll.setDisplaySize( DisplayObj.getVerticalDisplaySize() );
     vScroll.scroll(offset, ScrollBar::down);
-
+    std::cout << std::endl;
 }
 
 
 template<typename T>
 void ScrollableWindow<T> :: ScrollRight(int offset)
 {
-
+    //std::cout << " Horz :  Display size : " << DisplayObj.get
     DisplayObj.scrollRight(offset);
-    hScroll.setPageSize( DisplayObj.getVerticalPageSize() );
-    hScroll.setDisplaySize( DisplayObj.getVerticalDisplaySize() );
+    hScroll.setPageSize( DisplayObj.getHorizontalPageSize() );
+    hScroll.setDisplaySize( DisplayObj.getHorizontalDisplaySize() );
     hScroll.scroll(offset, ScrollBar::right);
 }
 
@@ -253,10 +313,42 @@ void ScrollableWindow<T> ::  ScrollLeft(int offset)
 {
 
     DisplayObj.scrollLeft(offset);
-    hScroll.setPageSize( DisplayObj.getVerticalPageSize() );
-    hScroll.setDisplaySize( DisplayObj.getVerticalDisplaySize() );
+    hScroll.setPageSize( DisplayObj.getHorizontalPageSize() );
+    hScroll.setDisplaySize( DisplayObj.getHorizontalDisplaySize() );
     hScroll.scroll(offset, ScrollBar::left);
 }
+
+#if(NEW_DEBUG)
+template<typename T>
+void ScrollableWindow<T> :: CreateVerticalPageSpace(int step)
+{
+
+    DisplayObj.changeVerticalPageSpace(step);
+    ConfigureVerticalScrollBar();
+    ScrollDown(step);
+}
+
+template<typename T>
+void ScrollableWindow<T> :: CreateHorizontalPageSpace(int step)
+{
+    DisplayObj.changeHorizontalPageSpace(step);
+    ConfigureHorizontalScrollBar();
+    ScrollRight(step);
+}
+
+
+template<typename T>
+void ScrollableWindow<T> :: Zoom(float scale)
+{
+
+    DisplayObj.zoom(scale);
+    ConfigureVerticalScrollBar();
+    ConfigureHorizontalScrollBar();
+
+}
+
+
+#endif
 
 template<typename T>
 void ScrollableWindow<T> :: draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -276,9 +368,11 @@ void ScrollableWindow<T> :: draw(sf::RenderTarget& target, sf::RenderStates stat
 
     this->EnclosingBox::draw(target,states);
 
-    if ( !vHide ) target.draw(vScroll);
-    if (!hHide ) target.draw(hScroll );
+
     target.draw(DisplayObj);
+    if ( !vHide ) target.draw(vScroll);
+    if ( !hHide ) target.draw(hScroll );
+
 }
 
 

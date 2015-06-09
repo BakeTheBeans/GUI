@@ -1,0 +1,12 @@
+<Object>
+    <DirectoryMenu Type="Open">
+        <EnclosingBox Height="700" Width="500" FillColor="505050" TextColor="200010" Font="30" TextAlignment="Right" />
+        <Title Text="FILE DIRECTORY" Height="20" Width="500" XOff="0" YOff="0" FillColor ="909090" TextColor="200001" Font="15" TextAlignment="Center" />
+        <DirectoryMenuPage XOff="75" YOff="100" />
+        <Label Text="Path" Height="20"  Width="60" XOff="50" YOff="50" FillColor="ffffff" TextColor="000000" Font="14" TextAlignment="Left"/>
+        <TextBox Height="20" Width="350" XOff="140" YOff="50" FillColor="cccccc" Text="Enter Text Here" TextColor="000000" Font="15" TextAlignment="Left" />
+        <UpIcon Scale="0.8,0.7" XOff="25" YOff="50" />
+        <FileButton Name="File" XOff="50" YOff="650" />
+        <CancelButton Name="Cancel" XOff="300" YOff="650" />
+    </DirectoryMenu>
+</Object>

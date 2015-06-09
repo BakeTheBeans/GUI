@@ -13,11 +13,8 @@ const float DirectoryMenu ::  DefaultWidth = 400;
 const float DirectoryMenu ::  DefaultHeight = 600;
 const float DirectoryMenu ::  DefaultBorderSize = 5;
 
-#if(NEW_DEBUG)
-DirectoryMenu :: DirectoryMenu() : /*EnclosingBox() ,*/internal::ComplexObject(), menuPage(), menuPageWindow(0), CancelButton(), FileButton()
-  #else
-DirectoryMenu :: DirectoryMenu() : menuPage(), menuPageWindow(0), CancelButton(), FileButton()
-  #endif
+
+DirectoryMenu :: DirectoryMenu() : internal::ComplexObject(), menuPage(), menuPageWindow(0), CancelButton(), FileButton()
 {
     GuiFactory & factory = GuiFactory::GetFactoryInstance();
 
@@ -37,6 +34,7 @@ DirectoryMenu :: DirectoryMenu() : menuPage(), menuPageWindow(0), CancelButton()
     menuPageWindow->setVerticalDisplaySize(15);
 
     menuPageWindow->Configure();
+    icon = IconBuilder::getIcon<UpIcon>();
 
     CancelButton.setScale(0.4,0.4);
     FileButton.setScale(0.4,0.4);
@@ -85,7 +83,6 @@ DirectoryMenu :: DirectoryMenu() : menuPage(), menuPageWindow(0), CancelButton()
     setBorderSize(5);
     setBorderColor(COL_GRAY_3);
 
-#if(NEW_DEBUG)
     Register<GUI::EnclosingBox>("EnclosingBox", *static_cast<EnclosingBox*>(this) );
     Register<GUI::ScrollableWindow<DirectoryMenuPage>>("DirectoryMenuPage",*menuPageWindow );
     Register<GUI::MenuTiles>("Title", TileMap["Title"]);
@@ -93,13 +90,24 @@ DirectoryMenu :: DirectoryMenu() : menuPage(), menuPageWindow(0), CancelButton()
     Register<GUI::MenuTiles>("TextBox", TileMap["DirectoryNameArea"]);
     Register<GUI::Button<GUI::CancelTexture>>("CancelButton", CancelButton);
     Register<GUI::Button<GUI::FileTexture>>("FileButton", FileButton);
+    Register<GUI::Icon>("UpIcon", *icon);
 
-#endif
+    icon->iconEvents.AddEvent<DirectoryMenu>(this, &DirectoryMenu::MoveUpDirectory );
+
 
 }
 
 
-#if(NEW_DEBUG)
+void DirectoryMenu :: MoveUpDirectory()
+{
+    if ( menuPage.MoveUpDirectory() ) TileMap["DirectoryNameArea"].setText( menuPage.getCurrentDirectoryName() );
+}
+
+void DirectoryMenu :: ClickUpIcon()
+{
+    icon->iconEvents.FireEvents();
+}
+
 void DirectoryMenu :: ConfigureSubElements()
 {
    for(auto & menu : TileMap) menu.second.Configure();
@@ -109,7 +117,44 @@ void DirectoryMenu :: ConfigureSubElements()
 
 }
 
-#endif
+//This is acting weird
+bool DirectoryMenu :: InteractWithMouse(sf::Window * window)
+{
+    if ( menuPage.ContainsMouseInside(window) )
+    {
+        if ( menuPage.InteractWithMouse(window) )
+        {
+            MenuTiles & textBar = TileMap["DirectoryNameArea"];
+             textBar.setText(menuPage.getCurrentDirectoryName());
+             return true;
+        }
+    }
+    else return false;
+
+}
+
+bool DirectoryMenu :: ActionOnPressingReturn()
+{
+    if (menuPage.ActionOnPressingReturn() )
+    {
+        MenuTiles & textBar = TileMap["DirectoryNameArea"];
+        textBar.setText(menuPage.getCurrentDirectoryName());
+    }
+}
+
+void DirectoryMenu :: ActionOnPressingDownArrow()
+{
+    menuPage.ActionOnPressingDownArrow();
+
+    if ( menuPage.getSelectedTileIndex() >= menuPage.getVerticalDisplaySize() ) menuPageWindow->ScrollDown(1);
+
+}
+
+void DirectoryMenu :: ActionOnPressingUpArrow()
+{
+     menuPage.ActionOnPressingUpArrow();
+     if ( menuPage.getSelectedTileIndex() >= menuPage.getVerticalDisplaySize() ) menuPageWindow->ScrollUp(1);
+}
 
 void DirectoryMenu :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -120,10 +165,9 @@ void DirectoryMenu :: draw(sf::RenderTarget& target, sf::RenderStates states) co
     target.draw(*menuPageWindow);
     target.draw(CancelButton);
     target.draw(FileButton);
+    target.draw(*icon);
+
 }
-
-
-
 
 
 } //EON
