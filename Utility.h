@@ -186,7 +186,7 @@ private:
     XmlNode node;
 
     bool EnterElement()
-    {
+    {        
         bool foo =  xml.IntoElem();
         return foo;
     }

@@ -126,7 +126,7 @@ private:
 
 protected:
     IScrollWindowCallBack * window;
-    void AttachWindow(IScrollWindowCallBack * _window) { window = _window; }
+    void AttachCallBackWindow(IScrollWindowCallBack * _window) { window = _window; }
 
     /*
      * Perform any operation on the entity held by the ScrollableWindow
@@ -166,7 +166,6 @@ protected:
 
     void resetVerticalScrollBar();
 
-#if(NEW_DEBUG)
     /*
      * This is method is called when scrollable window page
      * is vertically increased or
@@ -184,8 +183,6 @@ protected:
     virtual void zoom(float scale) { throw "IScollable::zoom not implemented"; }
 
     virtual void ResetPosition() {throw "IScollable::ResetPosition not implemented"; }
-
-#endif
 
 
 public:

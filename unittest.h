@@ -1,4 +1,4 @@
-#ifndef UNITTEST_H
+    #ifndef UNITTEST_H
 #define UNITTEST_H
 
 #include "define.h"
@@ -22,6 +22,9 @@
 #include "button.h"
 #include "menu.h"
 #include "factory.h"
+#include <memory>
+#define _S(arg) std::shared_ptr<GUI::IButton>((arg))
+
 #endif
 
 #if(TEXTBOX_TEST)
@@ -119,8 +122,10 @@ public:
        virtual void SetUpEnvironment()=0;
        virtual void InsidePollingImpl()=0;
        virtual void DisplayObjects()=0;
+
        virtual void CleanUp()
        {
+           DEBUG_MESSAGE
 #if(!NO_DISPLAY)
            window->close();
 #endif
@@ -165,22 +170,19 @@ class DrawAppTest : public UnitTest
 {
 
     //******Create your variables here to **********
-
     Draw::DrawApp app;
-
 
     //**********************************************
 
 public:
-     DrawAppTest(sf::Event & _event) : UnitTest(_event)
-     {
-
+     DrawAppTest(sf::Event & _event) : UnitTest(_event), app()
+     {      
 
      }
 
      ~DrawAppTest ()
      {
-          if(p) delete p;
+        DEBUG_MESSAGE
      }
 
      virtual void SetUpEnvironment();
@@ -205,12 +207,13 @@ class  DrawTest : public UnitTest
     Draw::IDrawableShapes * p;
     bool flag;
 #elif(Test_2)
-    Draw::DrawingPage page;
-#if(NEW_DEBUG)
+
+    Draw::DrawingPage *page, *page1;
+
     GUI::ScrollableWindow<Draw::DrawingPage> * scrollWindow;
     bool flags[3];
     bool flag;
-#endif
+
 
 #elif(Test_3)
 #if(NEW_DEBUG || NO_DISPLAY)
@@ -225,7 +228,7 @@ public:
 #if(Test_1)
     DrawTest(sf::Event & _event) : UnitTest(_event), p(0), flag(false)
 #elif(Test_2)
-    DrawTest(sf::Event & _event) : UnitTest(_event), page(), flags(), flag(false)
+    DrawTest(sf::Event & _event) : UnitTest(_event), page(), page1(), flags(), flag(false)
   #elif(Test_3)
     DrawTest(sf::Event & _event) : UnitTest(_event), page(), scrollWindow(0)
 #endif
@@ -233,9 +236,7 @@ public:
 #if(Test_2)
             flags[0] = flags[1] = false;
             flags[2] = true;
-#if(NEW_DEBUG)
-            scrollWindow = new GUI::ScrollableWindow<Draw::DrawingPage>(page);
-#endif
+            scrollWindow = new GUI::ScrollableWindow<Draw::DrawingPage>();
 #endif
 
 #if(Test_3)

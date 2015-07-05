@@ -8,8 +8,10 @@ namespace GUI {
 ButtonTexture :: ButtonTexture() :  ImageFileNameMap() {}
 
 
+
 std::string ButtonTexture :: getImageName(BUTTON::ImageId id)
 {
+
     auto it = ImageFileNameMap.find(id);
     if ( it != ImageFileNameMap.end() )
     {
@@ -20,11 +22,13 @@ std::string ButtonTexture :: getImageName(BUTTON::ImageId id)
 
 }
 
+
 sf::Texture * ButtonTexture :: getButtonTexture()
 {
      return ResourceManager::getResource<GUI::Texture>(getImageName(BUTTON::BUTTON_IMAGE_NAME).c_str() );
 
 }
+
 
 sf::Texture * ButtonTexture :: getPressedButtonTexture()
 {
@@ -38,48 +42,162 @@ sf::Texture * ButtonTexture :: getHoverButtonTexture()
 }
 
 
+
 PlainTexture :: PlainTexture()
 {
-    //type = BUTTON::Plain;
-    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_2";
-    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_3";
-    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_4";
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_1";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_2";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_3";
+
 }
 
 FileTexture :: FileTexture()
 {
-    //type = BUTTON::File;
-    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_5";
-    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_6";
-    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_7";
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_4";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_5";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_6";
+
 }
 
 
 CancelTexture :: CancelTexture()
 {
-    //type = BUTTON::Cancel;
-    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_8";
-    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_9";
-    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_10";
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_7";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_8";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_9";
+
 }
 
 EditTexture :: EditTexture()
 {
-    //type = BUTTON::Edit;
-    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_11";
-    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_12";
-    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_13";
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_10";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_11";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_12";
 }
 
 
 
 MenuTexture :: MenuTexture()
 {
-    //type = BUTTON::Menu;
-    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_14";
-    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_15";
-    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_16";
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_13";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_14";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_15";
 }
+
+ShapeTexture :: ShapeTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_16";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_17";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_18";
+
+}
+
+LineTexture :: LineTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_19";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_20";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_21";
+
+}
+
+
+RectangleTexture :: RectangleTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_22";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_23";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_24";
+
+}
+
+CircleTexture :: CircleTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_25";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_26";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_27";
+
+}
+
+TriangleTexture :: TriangleTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_28";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_29";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_30";
+
+}
+
+RhombusTexture :: RhombusTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_31";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_32";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_33";
+
+}
+
+PentagonTexture :: PentagonTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_34";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_35";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_36";
+
+}
+
+HexagonTexture :: HexagonTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_37";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_38";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_39";
+
+}
+
+OctagonTexture :: OctagonTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_40";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_41";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_42";
+
+}
+
+BlockTexture :: BlockTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_43";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_44";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_45";
+
+}
+
+
+WireFrameTexture :: WireFrameTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_46";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_47";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_48";
+
+}
+
+
+QuadTexture :: QuadTexture()
+{
+
+    ImageFileNameMap[BUTTON::BUTTON_IMAGE_NAME] = "ButtonImage_49";
+    ImageFileNameMap[BUTTON::PRESSED_BUTTON_IMAGE_NAME] = "ButtonImage_50";
+    ImageFileNameMap[BUTTON::HOVER_BUTTON_IMAGE_NAME] = "ButtonImage_51";
+
+}
+
+
+
 
 /*
 NavigateTexture :: NavigateTexture()

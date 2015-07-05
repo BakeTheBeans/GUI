@@ -40,7 +40,8 @@
 #endif
 #endif
 
-#define NEW_DEBUG 1
+#define VERBOSE_DEBUG 0
+#define NEW_DEBUG 0
 #define DEBUG 1
 #define OLD_DEBUG 0
 #define DEPRECATED 0

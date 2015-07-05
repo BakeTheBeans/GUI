@@ -17,9 +17,8 @@
 #else
 #include "Utility.h"
 #include "unittest.h"
+#include "drawapp.h"
 #endif
-
-
 
 
 int main()
@@ -34,12 +33,14 @@ int main()
 #else
     sf::Event event;
     UnitTest * Test = 0;
-    try{
+    try
+    {
+
         GUI::ResourceManager::RegisterResources();
     }
 
     catch(const char * ss)
-    {
+    {        
         std::cout << ss << std::endl;
     }
 
@@ -71,18 +72,25 @@ try{
 #elif(DirectoryMenuTest)
        Test = new DirectoryMenuTest(event);
 #elif(DRAW_TEST)
-        Test = new DrawTest(event);
+       Test = new DrawTest(event);
+#elif(DRAW_APPLICATION_TEST)
+       Test = new DrawAppTest(event);
+#elif(DRAW_APP)
+        Test = new Draw::DrawApp(event);
 #endif
 
-    Test->SetUpEnvironment();
+               Test->SetUpEnvironment();
 
     bool running = true;
-
+    int _count = 0;
     while(running)
     {
+        _count++;
+        //if ( _count == 3) running = false;
 #if(!NO_DISPLAY)
         while( Test->getWindowHandle()->pollEvent(event) )
         {
+            DEBUG_MESSAGE
             STOP_ON_PRESSING_SPACEBAR;
             Test->InsidePollingImpl();           
         }
@@ -91,7 +99,6 @@ try{
 #else
         Test->NoDisplayFunction();
         break;
-
 #endif
 
     }
@@ -102,9 +109,12 @@ try{
     }
 
     Test->CleanUp();
+    DEBUG_MESSAGE
     delete Test;
+    DEBUG_MESSAGE
 
     GUI::ResourceManager::Dispose();
+    DEBUG_MESSAGE
 #endif
 
     return 0;

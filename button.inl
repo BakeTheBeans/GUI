@@ -4,6 +4,20 @@ template class Button<FileTexture>;
 template class Button<CancelTexture>;
 template class Button<EditTexture>;
 template class Button<MenuTexture>;
+template class Button<ShapeTexture>;
+template class Button<LineTexture>;
+template class Button<RectangleTexture>;
+template class Button<CircleTexture>;
+template class Button<TriangleTexture>;
+template class Button<RhombusTexture>;
+template class Button<PentagonTexture>;
+template class Button<HexagonTexture>;
+template class Button<OctagonTexture>;
+template class Button<BlockTexture>;
+template class Button<WireFrameTexture>;
+template class Button<QuadTexture>;
+
+
 /*
 template class Button<NavigateTexture>;
 template class Button<NextTexture>;

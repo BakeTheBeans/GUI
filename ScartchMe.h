@@ -6,6 +6,7 @@
 
 
 //For Draw application
+#define DRAW_APP 1
 #define DRAW_APPLICATION_TEST 0
 
 //To test components
@@ -16,7 +17,7 @@
 #define SCROLLBAR_TEST 0
 #define MENUPAGE_TEST 0
 #define SCROLLWINDOW_TEST 0
-#define DIRECTORY_MENU_TEST 1
+#define DIRECTORY_MENU_TEST 0
 #define MENUTILES_TEST 0
 #define SCROLLABLETEXTWINDOW_TEST 0
 #define DIRECTORYMENUPAGE_TEST 0

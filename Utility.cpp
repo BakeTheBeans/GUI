@@ -44,8 +44,9 @@ bool xmlParser :: Next()
 {
 
     node.Reset();
-    bool exists = FindElement("Node") ? EnterElement() : false;
-
+    //bool exists = FindElement("Node") ? EnterElement() : false;
+    //bool exists = FindElement("Node");
+/*
     if ( exists && FindElement("Name") )
     {
         std::string file;
@@ -56,6 +57,21 @@ bool xmlParser :: Next()
         ExitElement();
         return true;
     }
+*/
+    if ( FindElement("Node") )
+    {
+        node.name = xml.GetAttrib("Name");
+        node.filename = xml.GetAttrib("FileName");
+        node.description = xml.GetAttrib("Description");
+        //std::cout << xml.GetTagName() << std::endl;
+        //std::cout << xml.GetAttribName(0) << " " << xml.GetAttribName(1) << "  " << xml.GetAttribName(2) << std::endl;
+        //std::cout << "FOUND " << std::endl;
+
+        std::cout << xml.GetAttrib("Name") << "   " << xml.GetAttrib("FileName") << xml.GetAttrib("Description") << std::endl;
+        //ExitElement();
+        return true;
+    }
+
     else return false;
 
 }

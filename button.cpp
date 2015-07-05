@@ -16,7 +16,7 @@ xButton :: xButton() : IButton(),  IHover( *static_cast<sf::Sprite*>(this) ), ID
 #endif
 
 template<typename T>
-Button<T> :: Button() : IButton(), /*xButton(), */ textureProp()
+Button<T> :: Button() : IButton(), /*xButton(), */ textureProp(),_button(0), _pressedButton(0), _hoverButton(0), _pressed(false), _mouseHovering(false)
 {
     ButtonTexture * check = static_cast<T*>(0);
     _pressed = false;
@@ -26,12 +26,12 @@ Button<T> :: Button() : IButton(), /*xButton(), */ textureProp()
     pTexture = textureProp.getButtonTexture();
     LoadButtonTexture(pTexture);
 
-    if ( T::isPressable )
-    {
-        sf::Texture *qTexture = 0;
-        qTexture = textureProp.getPressedButtonTexture();
-        LoadPressedButtonTexture(qTexture);
-    }
+    sf::Texture *qTexture = 0;
+    qTexture = textureProp.getPressedButtonTexture();
+    LoadPressedButtonTexture(qTexture);
+
+    sf::Texture * hTexture = textureProp.getHoverButtonTexture();
+    LoadHoverButtonTexture(hTexture);
 
 #if(!OLD_DEBUG)
 
@@ -45,13 +45,13 @@ Button<T> :: Button() : IButton(), /*xButton(), */ textureProp()
 #endif
 
     this->setTexture(*_button);
-    this->setTextureRect(sf::IntRect(0,0,204,74));
+    this->setTextureRect(sf::IntRect(0,0,204,74));        
 }
-
 
 template<typename T>
 void Button<T> :: Press()
 {
+    DEBUG_MESSAGE
     if (active)
     {
         this->setTexture(*_pressedButton);
@@ -59,6 +59,7 @@ void Button<T> :: Press()
     }
 
 }
+
 
 template<typename T>
 void Button<T> :: Release()
@@ -68,6 +69,7 @@ void Button<T> :: Release()
         this->setTexture(*_button);
     }
 }
+
 
 template<typename T>
 void Button<T> :: activate()
@@ -84,7 +86,37 @@ void Button<T> :: deactivate()
     active = false;
 }
 
+template<typename T>
+void Button<T> :: Hover(sf::Window & window)
+{
 
+    if ( isHoverable )
+    {
+        sf::Vector2i mPos = sf::Mouse::getPosition(window);
+        bool inside = this->getGlobalBounds().contains(mPos.x, mPos.y);
+        if ( _mouseHovering )
+        {
+
+            if (inside) return;
+            else
+            {
+                this->setTexture(*_button);
+                _mouseHovering = false;
+            }
+        }
+        else
+        {
+            if (inside)
+            {
+                _mouseHovering = true;
+                this->setTexture(*_hoverButton);
+            }
+
+        }
+
+    }
+
+}
 
 
 #include "button.inl"

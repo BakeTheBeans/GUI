@@ -71,7 +71,6 @@ public:
        return p;
     }
 
-
 };
 
 
@@ -92,6 +91,8 @@ namespace internal
 
 
 //This factory needs work.
+// I don't think I need factory for anything other than Buttons and possibly for icons
+
 class GuiFactory
 {
 

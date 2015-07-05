@@ -48,17 +48,27 @@ struct GUITrait
 class IButton :  public sf::Sprite
 {
 public:
-    //static const internal::GUI_Type gui_Type = internal::Button;
+    EventHandler buttonEvents;
 
 protected:
     bool active;    
-
+    bool isHoverable;
+    bool IsHoverable() { return isHoverable; }
 
 public:
-    virtual ~IButton() {}
+    IButton() : buttonEvents(), active(true), isHoverable(true) {}
 
-    virtual void Press()=0;
+    virtual ~IButton()
+    {
+
+    }
+
+    virtual void Print() { DEBUG_MESSAGE }
+    virtual void Press()=0;    
     virtual void Release()=0;
+    virtual void Hover(sf::Window & window) {}
+    void disableHovering() { isHoverable = false; }
+    void enableHovering() { isHoverable = true; }    
 
     /*
      * NOTE: This should be declared on a base class above this like IVisitable. But it stays here  for now. Every gui entity must define this.
@@ -122,8 +132,8 @@ public:
 
 private:
     T textureProp;
-public:
-    EventHandler buttonEvents;
+//public:
+//    EventHandler buttonEvents;
 
 
     //Copy constructor and Assignment operator are private to avoid copying. Use Factory to get buttons
@@ -132,11 +142,13 @@ public:
 protected:
     sf::Texture * _button;
     sf::Texture * _pressedButton;
+    sf::Texture * _hoverButton;
     bool _pressed;
+    bool _mouseHovering;
 
     void LoadButtonTexture(sf::Texture * tex) { _button = tex; }
     void LoadPressedButtonTexture(sf::Texture * tex) { _pressedButton = tex; }
-
+    void LoadHoverButtonTexture(sf::Texture * tex) { _hoverButton = tex; }
 
 public:
     Button();
@@ -145,10 +157,12 @@ public:
         std::cout << "Cannot set size on Button  " << std::endl;
     }
 
+
     virtual void Press();
     virtual void Release();
     virtual void activate();
     virtual void deactivate();
+    virtual void Hover(sf::Window & window);
     virtual const internal::GUI_Type getGUIType() const { return gui_Type; }
 
 };

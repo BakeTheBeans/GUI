@@ -9,13 +9,41 @@
 namespace GUI {
 
 
-MenuBar :: MenuBar(const char * _name, internal::AlignmentType _alignment,float _slabWidth, float _slabHeight,float _borderSize) : IButton(), menuShape(), xScale(1), yScale(1), slabHeight(_slabHeight), slabWidth(_slabWidth),borderSize(_borderSize), End(),alignment(_alignment), isCollapsed(false), name(_name), buttonList(),  init(false), count()
+MenuBar :: MenuBar(const char * _name, internal::AlignmentType _alignment,float _slabWidth, float _slabHeight,float _borderSize) : IButton(), menuShape(nullptr), xScale(1), yScale(1), slabHeight(_slabHeight), slabWidth(_slabWidth),borderSize(_borderSize), End(),alignment(_alignment), isCollapsed(false), name(_name), buttonList(),  init(false), count()
 {
-    menuShape.reset(new sf::RectangleShape());
+    //menuShape.reset(new sf::RectangleShape());
+    menuShape = new sf::RectangleShape();
     menuShape->setOutlineColor(COL_GRAY);
     menuShape->setOutlineThickness(borderSize);
     menuShape->setPosition(DefualtPosition);
     End = buttonList.end();
+}
+
+
+MenuBar :: MenuBar(MenuBar && obj) : /*menuShape(std::move(obj.menuShape))*/ menuShape(obj.menuShape), xScale(obj.xScale), yScale(obj.yScale), slabHeight(obj.slabHeight), slabWidth(obj.slabWidth), borderSize(obj.borderSize), End(obj.End), alignment(obj.alignment), isCollapsed(obj.isCollapsed), name(obj.name), buttonList(obj.buttonList)
+{
+    obj.buttonList.clear();
+    obj.menuShape;
+}
+
+
+MenuBar & MenuBar :: operator=(MenuBar && obj)
+{
+    //menuShape = std::move(obj.menuShape);
+    menuShape = obj.menuShape;
+    obj.menuShape = nullptr;
+    xScale = obj.xScale;
+    yScale = obj.yScale;
+    slabHeight = obj.slabHeight;
+    slabWidth = obj.slabWidth;
+    borderSize = obj.borderSize;
+    End = obj.End;
+    alignment = obj.alignment;
+    isCollapsed = obj.isCollapsed;
+    name = obj.name;
+    buttonList = obj.buttonList;
+    obj.buttonList.clear();
+    return *this;
 }
 
 
@@ -59,7 +87,7 @@ const sf::Vector2f MenuBar :: getMenuItemPositionAt(int buttonIndex) const
 }
 
 
-MenuBar & MenuBar :: AddMenuItem(ButtonPtr _button)
+MenuBar & MenuBar :: AddMenuItem(const ButtonSPtr & _button)
 {
 
     if (!_button) return *this;
@@ -77,22 +105,31 @@ MenuBar & MenuBar :: AddMenuItem(ButtonPtr _button)
 
     if ( _button->getGUIType() == internal::Menu )
     {
-        MenuBar * p = static_cast<MenuBar*>(_button);
+        MenuBar * p = static_cast<MenuBar*>(_button.get());        
         if ( (p->xScale != xScale) || (p->yScale != yScale) )
         {
             p->scale(xScale,yScale);
         }
     }
 
+
     menuShape->setSize(getFrameDimensions());
     _button->setPosition(getMenuItemPositionAt(buttonList.size()));
+
+    if ( _button->getGUIType() == internal::Menu ) {
+        MenuBar * p = static_cast<MenuBar*>(_button.get());
+        std::cout << "name of Menu : " << p->getName() << "Menu  Position : " << _button->getPosition().x << "   " << _button->getPosition().y << std::endl;
+    }
+
     buttonList.push_back(_button);
     End = buttonList.end();
     return *this;
 
 }
 
-void MenuBar :: InsertButton(ButtonPtr _button)
+
+//Do not use
+void MenuBar :: InsertButton(ButtonSPtr & _button)
 {
     buttonList.push_back(_button);
 }
@@ -109,7 +146,7 @@ void MenuBar :: SwapAlignment()
 void MenuBar :: setPosition(float posX, float posY)
 {
     menuShape->setPosition(posX,posY);
-    std::vector<ButtonPtr>::iterator it = buttonList.begin();
+    std::vector<ButtonSPtr>::iterator it = buttonList.begin();
     int buttonPos = 0;
 
     while( it != End )
@@ -117,12 +154,12 @@ void MenuBar :: setPosition(float posX, float posY)
         auto pos = getMenuItemPositionAt(buttonPos);
         if( (*it)->getGUIType() == internal::Menu )
         {
-           MenuBar * p = static_cast<MenuBar*>(*it);
+           MenuBar * p = static_cast<MenuBar*>((*it).get());
            p->setPosition(pos.x, pos.y);
         }
         else
         {
-            IButton * p = *it;
+            IButton * p = it->get();
             p->setPosition(pos.x, pos.y);
         }
 
@@ -131,7 +168,7 @@ void MenuBar :: setPosition(float posX, float posY)
     }
 }
 
-void MenuBar :: UnscaleButton(ButtonPtr p)
+void MenuBar :: UnscaleButton(const ButtonSPtr & p)
 {
     if ( xScale == 0 || yScale == 0) throw "MenuBar : Cannot Unscale for scale value 0.";
     p->scale(1/xScale,1/yScale);
@@ -158,15 +195,15 @@ void MenuBar :: scale(float scaleX, float scaleY)
         if( (*it)->getGUIType() == internal::Menu )
         {
 
-            MenuBar * p = static_cast<MenuBar*>(*it);
+            MenuBar * p = static_cast<MenuBar*>((*it).get());
             p->scale(scaleX,scaleY);
 
         }
 
         else
         {
-            IButton * p = *it;
-            UnscaleButton(p);
+            IButton * p = (*it).get();
+            UnscaleButton(*it);
             p->scale(scaleX,scaleY);
         }
 
@@ -199,21 +236,25 @@ void MenuBar :: Collapse()
     menuShape->setSize(getSlabDimensions());
     for(Iter it = buttonList.begin(); it != buttonList.end(); it++)
     {
-        ButtonPtr p = *it;
+        IButton * p = (*it).get();
+
         if ( p->getGUIType() == internal::Menu )
         {
-            MenuBar * q = static_cast<MenuBar*>(p);
+            MenuBar * q = static_cast<MenuBar*>((*it).get());
             q->Collapse();
         }
     }
+
+    disableHovering();
 }
 
 
 void MenuBar :: Expand()
-{
+{    
     isCollapsed = false;
     End = buttonList.end();
     menuShape->setSize(getFrameDimensions());
+    enableHovering();
 }
 
 void MenuBar :: draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -223,15 +264,73 @@ void MenuBar :: draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         target.draw(*menuShape);
         for(auto it = buttonList.begin(); it != End; it++)
-            target.draw(*(*it));
+            target.draw(*(*it).get());
+    }
+}
+
+bool MenuBar :: IsMouseInside(sf::Window & window)
+{
+    sf::Vector2i mPos = sf::Mouse::getPosition(window);
+
+    const sf::FloatRect & pos = menuShape->getGlobalBounds();
+
+    std::cout << "X : " << pos.left << " Y : " << pos.top <<
+                 " X : " << pos.left + pos.width << " Y : " << pos.top <<
+                 " X : " << pos.left + pos.width << " Y : " << pos.top + pos.height <<
+                 " X : " << pos.left << " Y : " << pos.top + pos.height <<
+                 std::endl;
+
+    std::cout << " Mouse Position : " << mPos.x << "   " << mPos.y << std::endl;
+
+    return menuShape->getGlobalBounds().contains(mPos.x, mPos.y);
+
+}
+
+void MenuBar :: Hover(sf::Window & window)
+{
+
+    auto menuhover = [this, &window] (MenuBar * menubar)-> void
+    {
+        bool inside = IsMouseInside(window);
+
+        if ( inside ) std::cout << "Mouse is inside " << menubar->getName() << std::endl;
+        else std::cout << "Mouse is outside " << menubar->getName() << std::endl;
+
+
+
+        if ( !( menubar->isCollapsed ) )
+        {
+            if ( inside ) return;
+            else menubar->Collapse();
+        }
+
+        else
+        {
+            if( inside ) menubar->Expand();
+            else return;
+        }
+
+    };
+
+
+    for( ButtonSPtr & button : buttonList )
+    {
+        switch(button->getGUIType())
+        {
+
+        case internal::Menu:
+            menuhover( static_cast<MenuBar*>(button.get() ) );
+            break;
+
+        case internal::Button:
+            button->Hover(window);
+            break;
+        }
+
     }
 }
 
 //***************************************************************
-
-
-
-
 
 
 

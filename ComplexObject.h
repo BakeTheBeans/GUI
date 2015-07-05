@@ -120,11 +120,12 @@ void SetPosition()
 
 void SetUpDisplay() {}
 
-void SetUpFromXml()
+void SetUpFromXml(const char * filename = "Gui.xml" )
 {
 
     CMarkup xml;
-    if ( !xml.Load("Gui.xml")) throw "Could not find Gui.xml";
+    //if ( !xml.Load("Gui.xml")) throw "Could not find Gui.xml";
+    if ( !xml.Load(filename)) throw "Could not find Gui.xml";
     if(!xml.IsWellFormed()) throw "Xml file is ill formed";
 
     if (xml.FindElem("Object") ) xml.IntoElem();

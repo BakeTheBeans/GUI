@@ -22,16 +22,12 @@ class RenderStates;
 
 namespace Draw {
 
-#if(NEW_DEBUG)
+
 class DrawingPage : public GUI::EnclosingBox, public GUI::IScrollable
-#else
-class DrawingPage : public sf::Drawable
-#endif
 {    
 
-#if(NEW_DEBUG)
 friend class GUI::ScrollableWindow<DrawingPage>;
-#endif
+
 
     typedef int _size;
 
@@ -53,10 +49,15 @@ friend class GUI::ScrollableWindow<DrawingPage>;
 
     std::pair<sf::Vector2f,sf::Vector2f> bounds;  //Bounding box that encompasses all the shapes
 
+private:
+    DrawingPage(const DrawingPage & obj );
+    DrawingPage & operator=(const DrawingPage & obj );
+
+
 public:
 
     DrawingPage() : shapeColl(), currentShape(nullptr), selectedShape(nullptr), pageLoop(false), pause(false), status(started), pageScrollPos(), pageSize(), displaySize()
-    {
+    {        
     }
 
     //Inside implementation Loop
@@ -117,7 +118,7 @@ public:
      void Save(std::string filename);
      void Load(std::string filename);
 
-#if(NEW_DEBUG)
+
 protected:
      virtual void changeVerticalPageSpace(int step);
      virtual void changeHorizontalPageSpace(int step);
@@ -145,8 +146,6 @@ public:
      virtual void scrollRight(int offset);
 
      virtual void scrollLeft(int offset);
-
-#endif
 
      void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

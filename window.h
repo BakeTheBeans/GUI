@@ -5,7 +5,8 @@
 #include "textbox.h"
 //#include "menupage.h"
 //#include "directorymenupage.h"
-
+#include <memory>
+#include <list>
 
 namespace GUI {
 
@@ -38,26 +39,38 @@ protected:
     virtual void ResizeWindow();
 
 private:
+
     ScrollBar vScroll {internal::Vertical};
     ScrollBar  hScroll {internal::Horizontal};
     float ScrollThickness;
-    bool hHide,vHide;
-    T & DisplayObj;
+    bool hHide,vHide;    
+    T * DisplayObj;
+    std::list<T*> buffer;
+
+    T * dummy;
 
 public:
-  ScrollableWindow(T & scrollableObj);
-  virtual ~ScrollableWindow()  {}  
+  ScrollableWindow();
+  ScrollableWindow(T * displayObj);
+  virtual ~ScrollableWindow()
+  {
+    if ( dummy ) delete dummy;
+    for(T * p : buffer) delete p;
+  }
 
   void setScrollBarColor(sf::Color _color);
   void setScrollStoneColor(sf::Color _color);
   void setVerticalDisplaySize(unsigned int _dispSize);
   void setHorizontalDisplaySize(unsigned int _dispSize);
-#if(NEW_DEBUG)
+
   void CreateVerticalPageSpace(int step);
   void CreateHorizontalPageSpace(int step);
   void Zoom(float scale);
 
-#endif
+  void AttachDisplay(T * obj);
+  T *  DetachDisplay();
+  T * getCurrentPage() { return DisplayObj; }
+
   void ScrollUp(int offset);
   void ScrollDown(int offset);
   void ScrollRight(int offset);

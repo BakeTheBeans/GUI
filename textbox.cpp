@@ -54,6 +54,7 @@ void TextBox :: CalculaterowsPerPage()
     {
         int vert = getHeightAndSpacing();
        rowsPerPage = getInternalHeight()/vert;
+       std::cout << " Rows per page : " << rowsPerPage << std::endl;
     }
 
     catch(const char *ss)
@@ -141,6 +142,7 @@ void TextBox :: SetUpDisplay()
     SetSize();
     SetPosition();
     SetUpText();    
+
 }
 
 void TextBox :: SetUpWindowDisplay()

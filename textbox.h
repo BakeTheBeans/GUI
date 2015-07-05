@@ -65,8 +65,8 @@ public:
    void SetUpWindowDisplay();
    int getVerticalPageSize() { return numOfTextRows; }
    int getVerticalDisplaySize()     { return rowsPerPage; }
-   int getHorizontalPageSize() { std::cout <<  "Not Implemeneted"; }
-   int getHorizontalDisplaySize(){ std::cout <<  "Not Implemeneted"; }
+   int getHorizontalPageSize() { std::cout <<  "TextBox :: PageSize Not Implemeneted"; }
+   int getHorizontalDisplaySize(){ std::cout <<  "TextBox :: DispalySize Not Implemeneted"; }
 
 
 

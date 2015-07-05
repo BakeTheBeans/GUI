@@ -12,6 +12,8 @@
 #include <vector>
 
 
+#include "DebugTool.h"
+
 namespace GUI {
 
 
@@ -39,7 +41,7 @@ private:
     sf::RectangleShape stone;
     int displaySize;
     int pageSize;
-    int currentStonePos;
+    int currentStonePos;    
 
     virtual void SetUpDisplay();
 
@@ -51,7 +53,7 @@ protected:
 protected:
     void setStoneSize();
 public:
-    ScrollBar(){}
+    //ScrollBar() : track(-1) {}
     ScrollBar(internal::AlignmentType _alignment);
     ScrollBar(internal::AlignmentType _align,float barWidth,float barHeight, float barThickness);
     void setHolderSpaceColor(sf::Color hColor)
@@ -62,11 +64,6 @@ public:
 
     void setAlignment(internal::AlignmentType _alignment){}
     void setStoneColor(sf::Color sColor) { stone.setFillColor(sColor); }
-#if(NEW_DEBUG)
-    void UpdateCurrentStonePosition();
-    void ScrollToStart();
-    void ScrollToEnd();
-#endif
 
     void setDisplaySize(int _size);
     void setPageSize(int _size);

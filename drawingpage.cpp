@@ -32,6 +32,7 @@ void DrawingPage :: Load(std::string filename)
 
 void DrawingPage :: draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+    EnclosingBox::draw(target, states);
     for( ShapePtr shape : shapeColl ) target.draw(*shape);
     if (currentShape) target.draw(*currentShape);
 }
@@ -69,9 +70,6 @@ void DrawingPage :: SetSize()
 
 void DrawingPage :: SetUpDisplay()
 {
-    //pageSize.second = getInternalHeight();
-    //displaySize.second = getInternalHeight();
-    //pageScrollPos.second = getInternalHeight();
     pageSize = std::make_pair( getInternalWidth(), getInternalHeight());
     displaySize = std::make_pair( getInternalWidth(), getInternalHeight());
     pageScrollPos = std::make_pair( getInternalWidth(), getInternalHeight() );
@@ -102,10 +100,10 @@ void DrawingPage :: changeHorizontalPageSpace(int step)
 
 void DrawingPage :: scrollDown(int offset)
 {
-//    if ( offset  > 5 ) std::cout << "Drawing Page Warning : " << " offset : " << offset << std::endl;
 
+    if ( pageScrollPos.second >= pageSize.second ) return;  //Don't Delete
 
-    if ( pageScrollPos.second >= getVerticalPageSize() ) return;
+    //if ( pageScrollPos.second >= getVerticalPageSize() ) return;
 
     int len = ( offset > ( getVerticalPageSize() - pageScrollPos.second ) ) ? ( getVerticalPageSize() - pageScrollPos.second ) : offset;
 
@@ -125,21 +123,13 @@ void DrawingPage :: scrollDown(int offset)
 void DrawingPage :: scrollUp(int offset)
 {
 
-    if ( pageScrollPos.second <= displaySize.second ) return;
-
-    //Bug
-    //int len = ( offset > (pageScrollPos.second - displaySize.second ) ) ? ( pageSize.second - pageScrollPos.second ) : offset;
+    if ( pageScrollPos.second <= displaySize.second ) return;  //Don't Delete
 
     int len = ( offset > (pageScrollPos.second - displaySize.second ) ) ? pageScrollPos.second - displaySize.second : offset;
 
     pageScrollPos.second -= len;
 
     std::cout << "Window Page Size " <<  pageSize.second << "   DisplaySize  " <<  displaySize.second << "  " <<  "  Scroll position " << "  " << pageScrollPos.second << std::endl;
-
-    if ( (offset > 5) || (len > 5) )
-    {
-        std::cout << "WARNING : offset is  : " << offset << "   Length : " << len << std::endl;
-    }
 
     for( ShapePtr shape : shapeColl )
     {
@@ -151,7 +141,8 @@ void DrawingPage :: scrollUp(int offset)
 void DrawingPage :: scrollRight(int offset)
 {
 
-    if ( pageScrollPos.first >= getHorizontalPageSize() ) return;
+    //if ( pageScrollPos.first >= getHorizontalPageSize() ) return;
+    if ( pageScrollPos.first >= pageSize.first ) return;  //Don't Delete
 
     int len = ( offset > ( getHorizontalPageSize() - pageScrollPos.first ) ) ? ( getHorizontalPageSize() - pageScrollPos.first ) : offset;
 
@@ -166,10 +157,8 @@ void DrawingPage :: scrollRight(int offset)
 void DrawingPage :: scrollLeft(int offset)
 {
 
-    if ( pageScrollPos.first <= displaySize.first ) return;
-
-    //BUG
-     //int len = ( offset > (pageScrollPos.first - displaySize.first ) ) ? ( pageSize.first - pageScrollPos.first ) : offset;
+    if ( pageScrollPos.first <= displaySize.first ) return;  //Don't Delete
+    //if ( pageScrollPos.first <= displaySize.first ) return;
 
     int len = ( offset > (pageScrollPos.first - displaySize.first ) ) ? ( pageScrollPos.first - displaySize.first ) : offset;
 
@@ -192,20 +181,18 @@ void DrawingPage :: zoom(float scale)
     int minY = std::numeric_limits<int>::max();
     int maxY = std::numeric_limits<int>::min();
 
-    int  count = 0;
+    int  ShapeCount = 0;
     sf::Vector2f prevCentroid;
     for( ShapePtr shape : shapeColl )
     {
         auto shapeBound_1 = shape->getBounds();
-        //auto cen_1 = shape->getCentroid();
         shape->scale(scale,scale);
         auto shapeBound_2 = shape->getBounds();
 
 
-        //int xdiff = shapeBound_1.first.x - shapeBound_2.first.x;
-        //int ydiff = shapeBound_1.first.y - shapeBound_2.first.y;
-
-        if ( count > 0 )
+        //This just screws up everything
+        /*
+        if ( ShapeCount > 0 )
         {
             auto cen = shape->getCentroid();
             float xdiff = scale*(cen.x - prevCentroid.x);
@@ -217,11 +204,10 @@ void DrawingPage :: zoom(float scale)
 
         }
 
+        ShapeCount;
+        */
 
         prevCentroid = shape->getCentroid();
-        //( xdiff < 0 ) ? shape->MoveShapeLeft( std::abs(xdiff) ) : shape->MoveShapeRight( std::abs(xdiff) );
-
-        //( ydiff < 0 ) ? shape->MoveShapeUp( std::abs(ydiff) ) : shape->MoveShapeDown( std::abs(xdiff) );
 
         auto bounds = shape->getBounds();
         minX = std::min( minX, (int)bounds.first.x );
@@ -231,7 +217,6 @@ void DrawingPage :: zoom(float scale)
         std::cout << "maxX = " << maxX << "   maxY   : " << maxY << std::endl;
 
     }
-
 
 
     std::cout << " Vertical Page Size before zoom " <<pageSize.second << std::endl;
@@ -248,6 +233,12 @@ void DrawingPage :: zoom(float scale)
         pageSize.second = std::max( std::min(pageSize.second, maxY), displaySize.second );
 
     }
+
+
+    pageScrollPos.first = std::min( pageScrollPos.first, pageSize.first );
+    pageScrollPos.second = std::min( pageScrollPos.second, pageSize.second );
+
+
 
     std::cout << " Vertical Page Size after zoom " << pageSize.second << std::endl;
 

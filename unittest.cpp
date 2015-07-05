@@ -128,10 +128,27 @@ void ScratchTest :: DisplayObjects()
 
 
 #if(DRAW_APPLICATION_TEST)
- void DrawAppTest :: SetUpEnvironment() {}
- void DrawAppTest :: InsidePollingImpl() {}
+ void DrawAppTest :: SetUpEnvironment()
+ {
 
- void DrawAppTest :: DisplayObjects() {}
+     app.SetUpFromXml("DrawApp.xml");
+     app.setPosition(100,100);
+ }
+
+ void DrawAppTest :: InsidePollingImpl()
+ {
+//     if ( sf::Keyboard::isKeyPressed(sf::Keyboard::P)) app.TestPressButton();
+ //    if ( sf::Keyboard::isKeyPressed(sf::Keyboard::R)) app.TestReleaseButton();
+ }
+
+ void DrawAppTest :: DisplayObjects()
+ {
+     window->clear();
+     window->draw(app);
+     window->display();
+
+ }
+
  void DrawAppTest :: NoDisplayFunction() {}
 
 #endif
@@ -180,22 +197,31 @@ void DrawTest :: SetUpEnvironment()
 #endif
 
 
+    //page.setFillColor(COL_GREEN);
+    //page1.setFillColor(COL_BLUE);
+    //scrollWindow->AttachDisplay(&page);
+    //scrollWindow->AttachDisplay(&page1);
+    page = new Draw::DrawingPage();
+    page->setFillColor(COL_GREEN);
+    scrollWindow->AttachDisplay(page);
+    page1 = new Draw::DrawingPage();
+    page1->setFillColor(COL_BLUE);
+    scrollWindow->AttachDisplay(page1);
+
 #if(Test_2)
-#if(NEW_DEBUG)
+
 scrollWindow->setPosition(100,100);
 scrollWindow->setSize(600,600);
-page.Configure();
+page->Configure();
 scrollWindow->Configure();
-#endif
+
 #endif
 
 #if(Test_3)
-#if(NEW_DEBUG)
 scrollWindow->setPosition(100,100);
 scrollWindow->setSize(600,600);
 page.Configure();
 scrollWindow->Configure();
-#endif
 #endif
 
 
@@ -242,6 +268,12 @@ void DrawTest :: InsidePollingImpl()
 #if(Test_2)
 
 
+    if ( event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::D )
+    {
+        auto iter = scrollWindow->DetachDisplay();
+        scrollWindow->Configure();
+    }
+
     if ( sf::Keyboard::isKeyPressed(sf::Keyboard::V))
     {
         scrollWindow->CreateVerticalPageSpace(10);
@@ -275,14 +307,14 @@ void DrawTest :: InsidePollingImpl()
     if ( sf::Keyboard::isKeyPressed(sf::Keyboard::I))
     {
         //page.zoomIn(1.2);
-        scrollWindow->Zoom(1.2);
+        scrollWindow->Zoom(1.02);
     }
 
     if ( sf::Keyboard::isKeyPressed(sf::Keyboard::O))
     {
         std::cout << " Zooming Out : " << std::endl;
         //page.zoomIn(.9);
-        scrollWindow->Zoom(0.9);
+        scrollWindow->Zoom(0.98);
     }
 
 
@@ -290,19 +322,19 @@ void DrawTest :: InsidePollingImpl()
     {
         if ( flags[2] )
         {
-            flags[0] = page.DrawShape<Draw::Rectangle>(*window);
+            flags[0] = page->DrawShape<Draw::Rectangle>(*window);
             if ( flags[0] ) flags[2] = false;
         }
 
         if ( flags[0] )
         {
-            flags[1] = page.DrawShape<Draw::Triangle>(*window);
+            flags[1] = page->DrawShape<Draw::Triangle>(*window);
             if ( flags[1] ) flags[0] = false;
         }
 
         if ( flags[1] )
         {
-            flags[2] = page.DrawShape<Draw::BlockHexagon>(*window);
+            flags[2] = page->DrawShape<Draw::BlockHexagon>(*window);
             if ( flags[2] ) flag = true;
         }
 
@@ -312,7 +344,7 @@ void DrawTest :: InsidePollingImpl()
 
     if ( flag )
     {
-        page.EnablePageLoop();
+        page->EnablePageLoop();
     }
 
 
@@ -421,11 +453,7 @@ void DrawTest :: DisplayObjects()
     /*if (flag)*/ window->draw(*p);
     window->draw(Draw::MouseProjector::getMouseProjector());
 #elif(Test_2)
-#if(NEW_DEBUG)
     window->draw(*scrollWindow);
-#else
-       window->draw(page);
-#endif
 #elif(Test_3)
     window->draw(*scrollWindow);
 #endif
@@ -1121,16 +1149,31 @@ void MenuBarTest :: SetUpEnvironment()
 
     //newBar = new GUI::MenuBar("Hello", GUI::MenuBar::Vertical, 100, 40, 4);
     newBar = new GUI::MenuBar("Hello", GUI::internal::Vertical, 100, 40, 4);
-    newBar->AddMenuItem(GUI::ButtonFactory::getButton<GUI::FileTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::EditTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::CancelTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::MenuTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::FileTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::CancelTexture>());
+    //std::shared_ptr<GUI::IButton> ss(GUI::ButtonFactory::getButton<GUI::FileTexture>());
+    //std::shared_ptr<GUI::IButton> obj(GUI::ButtonFactory::getButton<GUI::FileTexture>());
+    newBar->AddMenuItem(std::shared_ptr<GUI::IButton>(GUI::ButtonFactory::getButton<GUI::FileTexture>())).
+            AddMenuItem(std::shared_ptr<GUI::IButton>(GUI::ButtonFactory::getButton<GUI::EditTexture>())).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::CancelTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::MenuTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::FileTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::CancelTexture>())));
 
     //newBranch = new GUI::MenuBar("NewBranch", GUI::MenuBar::Vertical,100, 40,4);
     newBranch = new GUI::MenuBar("NewBranch", GUI::internal::Vertical,100, 40,4);
-    newBranch->AddMenuItem(GUI::ButtonFactory::getButton<GUI::FileTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::FileTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>());
+    newBranch->AddMenuItem(std::shared_ptr<GUI::IButton>(GUI::ButtonFactory::getButton<GUI::FileTexture>())).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::FileTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>()))).
+            AddMenuItem(std::shared_ptr<GUI::IButton>((GUI::ButtonFactory::getButton<GUI::PlainTexture>())));
 
     newBar->setPosition(100,120);
     newBranch->setPosition(100,200);
     const sf::Vector2f & pos = newBar->getPosition();
-    newBar->AddMenuItem(newBranch);
+    //newBar->AddMenuItem(std::shared_ptr<GUI::IButton>(newBranch));
 
 
     newBar->setName("MainMenu");
@@ -1145,8 +1188,19 @@ void MenuBarTest :: SetUpEnvironment()
     bar = new GUI::MenuBar("Hello", GUI::internal::Vertical, 100,40,2);
     //bar = new GUI::MenuBar("Hello", GUI::MenuBar::Vertical, 100,40,2);
     bar->setBorderColor(sf::Color::Blue);
-    bar->AddMenuItem(GUI::ButtonFactory::getButton<GUI::EditTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::CancelTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::CancelTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::MenuTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::FileTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>()).AddMenuItem(GUI::ButtonFactory::getButton<GUI::PlainTexture>());
-
+    //bar->AddMenuItem(std::shared_ptr<GUI::IButton>(GUI::ButtonFactory::getButton<GUI::EditTexture>()));
+                     /*
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::CancelTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::CancelTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::MenuTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::FileTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>())).
+            AddMenuItem(S(GUI::ButtonFactory::getButton<GUI::PlainTexture>()));
+*/
     bar->setPosition(600,200);
 
 
@@ -1209,15 +1263,15 @@ void ButtonTest_1 :: SetUpEnvironment()
     SETUP_BUTTON(p,ButtonType
 ::B_MENU,GUI::MenuTexture,500,100,COL_YELLOW);
     SETUP_BUTTON(p,ButtonType
-::B_SETTINGS,GUI::SettingsTexture,600,300,COL_GREEN);
+::Bstd::shared_ptr<GUI::IButton>ETTINGS,GUI::SettingsTexture,600,300,COL_GREEN);
     SETUP_BUTTON(p,ButtonType
 ::B_NAVIGATE, GUI::NavigateTexture, 100,300,COL_MAGENTA);
     SETUP_BUTTON(p,ButtonType
 ::B_NEXT,GUI::NextTexture,200,300,COL_CYAN);
     SETUP_BUTTON(p,ButtonType
-::B_SAVE,GUI::SaveTexture,300,300,COL_RED);
+::Bstd::shared_ptr<GUI::IButton>AVE,GUI::SaveTexture,300,300,COL_RED);
     SETUP_BUTTON(p,ButtonType
-::B_STOP,GUI::StopTexture,400,300,COL_BLUE);
+::Bstd::shared_ptr<GUI::IButton>TOP,GUI::StopTexture,400,300,COL_BLUE);
     SETUP_BUTTON(p,ButtonType
 ::B_TOOLS,GUI::ToolsTexture,500,300,COL_YELLOW);
 
@@ -1262,7 +1316,7 @@ void ButtonTest_1 :: SetUpDragging()
     bar = static_cast<GUI::IDrag*>(static_cast<GUI::xButton*>(foo) );
     TestDrag.push_back(bar);
 
-    foo = ButtonMap[ButtonType::B_SETTINGS].get();
+    foo = ButtonMap[ButtonType::Bstd::shared_ptr<GUI::IButton>ETTINGS].get();
     bar = static_cast<GUI::IDrag*>(static_cast<GUI::xButton*>(foo) );
     TestDrag.push_back(bar);
 
@@ -1327,11 +1381,11 @@ ButtonTest_1::ButtonType::code ButtonTest_1 ::  MapNumericKeyToButton(sf::Keyboa
 
     case sf::Keyboard::Num2: return ButtonType::B_CANCEL | ButtonType::B_NAVIGATE;
 
-    case sf::Keyboard::Num3: return ButtonType::B_SAVE| ButtonType::B_NAVIGATE;
+    case sf::Keyboard::Num3: return ButtonType::Bstd::shared_ptr<GUI::IButton>AVE| ButtonType::B_NAVIGATE;
 
-    case sf::Keyboard::Num4:  return ButtonType::B_SETTINGS | ButtonType::B_TOOLS | ButtonType::B_PLAIN;
+    case sf::Keyboard::Num4:  return ButtonType::Bstd::shared_ptr<GUI::IButton>ETTINGS | ButtonType::B_TOOLS | ButtonType::B_PLAIN;
 
-    case sf::Keyboard::Num5:  return ButtonType::B_MENU | ButtonType::B_BACK | ButtonType::B_EDIT | ButtonType::B_STOP;
+    case sf::Keyboard::Num5:  return ButtonType::B_MENU | ButtonType::B_BACK | ButtonType::B_EDIT | ButtonType::Bstd::shared_ptr<GUI::IButton>TOP;
 
 
     case sf::Keyboard::Num6: return ButtonType::B_PLAIN;
@@ -1340,7 +1394,7 @@ ButtonTest_1::ButtonType::code ButtonTest_1 ::  MapNumericKeyToButton(sf::Keyboa
 
     case sf::Keyboard::Num8: return ButtonType::B_HOME | ButtonType::B_PENCIL | ButtonType::B_CIRCLE | ButtonType::B_NEWBUTTON;
 
-    case sf::Keyboard::Num9: return ButtonType::B_SQUARE | ButtonType::B_LINE | ButtonType::B_xBUTTON;
+    case sf::Keyboard::Num9: return ButtonType::Bstd::shared_ptr<GUI::IButton>QUARE | ButtonType::B_LINE | ButtonType::B_xBUTTON;
 
     case sf::Keyboard::Num0: return ButtonType::B_FILE | ButtonType::B_BOLD | ButtonType::B_NEWBUTTON;
 

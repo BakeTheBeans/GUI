@@ -37,7 +37,20 @@ enum ButtonType
     Navigate,
     Save,
     Next,
-    Back
+    Back,
+    Shapes,
+    Line,
+    Rectangle,
+    Circle,
+    Triangle,
+    Rhombus,
+    Pentagon,
+    Hexagon,
+    Octagon,
+    Block,
+    WireFrame,
+    Quad
+
 };
 
 
@@ -61,18 +74,19 @@ public:
     static const bool isHoverable = true;
 
 protected:
-
     std::map<BUTTON::ImageId,std::string> ImageFileNameMap;
-
     ButtonTexture();
 
 
 public:
-    virtual ~ButtonTexture() {}
+    virtual ~ButtonTexture() {}  
+
     std::string getImageName(BUTTON::ImageId id);
+
     virtual sf::Texture * getButtonTexture();
     virtual sf::Texture * getPressedButtonTexture();
     virtual sf::Texture * getHoverButtonTexture();
+
 
 };
 
@@ -81,12 +95,14 @@ struct PlainTexture : public ButtonTexture
 {
     static const BUTTON::ButtonType type = BUTTON::Plain;
     PlainTexture();
+
 };
 
 struct FileTexture : public ButtonTexture
 {
     static const BUTTON::ButtonType type = BUTTON::File;
     FileTexture();
+
 };
 
 
@@ -94,19 +110,116 @@ struct CancelTexture : public ButtonTexture
 {
     static const BUTTON::ButtonType type = BUTTON::Cancel;
     CancelTexture();
+
 };
 
 struct EditTexture : public ButtonTexture
 {
     static const BUTTON::ButtonType type = BUTTON::Edit;
     EditTexture();
+
 };
 
 struct MenuTexture : public ButtonTexture
 {
     static const BUTTON::ButtonType type = BUTTON::Menu;
     MenuTexture();
+
 };
+
+struct ShapeTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Shapes;
+    ShapeTexture();
+
+};
+
+struct LineTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Line;
+    LineTexture();
+
+};
+
+
+struct RectangleTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Rectangle;
+    RectangleTexture();
+
+};
+
+struct CircleTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Circle;
+    CircleTexture();
+
+};
+
+
+struct TriangleTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Triangle;
+    TriangleTexture();
+
+};
+
+
+
+struct RhombusTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Rhombus;
+    RhombusTexture();
+
+};
+
+struct PentagonTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Pentagon;
+    PentagonTexture();
+
+};
+
+
+struct HexagonTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Hexagon;
+    HexagonTexture();
+
+};
+
+
+struct OctagonTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Octagon;
+    OctagonTexture();
+
+};
+
+
+struct BlockTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Block;
+    BlockTexture();
+
+};
+
+
+struct WireFrameTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::WireFrame;
+    WireFrameTexture();
+
+};
+
+
+struct QuadTexture : public ButtonTexture
+{
+    static const BUTTON::ButtonType type = BUTTON::Quad;
+    QuadTexture();
+
+};
+
 
 
 /*

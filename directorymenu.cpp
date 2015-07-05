@@ -26,7 +26,8 @@ DirectoryMenu :: DirectoryMenu() : internal::ComplexObject(), menuPage(), menuPa
     menuPage.setTextFontSize(15);
     menuPage.setTileThickness(30);
 
-    menuPageWindow = new GUI::ScrollableWindow<GUI::DirectoryMenuPage>(menuPage);
+    menuPageWindow = new GUI::ScrollableWindow<GUI::DirectoryMenuPage>(&menuPage);
+    //menuPageWindow->AttachDisplay(&menuPage);
     menuPageWindow->setBorderSize(2);
 
     menuPageWindow->setPosition(300,100);

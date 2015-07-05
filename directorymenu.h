@@ -31,6 +31,7 @@ private:
 
     DirectoryMenuPage menuPage;
     ScrollableWindow<DirectoryMenuPage> * menuPageWindow;
+    //ScrollableWindow<DirectoryMenuPage> menuPageWindow;
 
     //std::map<std::string,IButton*> buttons;
     GUI::Button<GUI::CancelTexture> CancelButton;

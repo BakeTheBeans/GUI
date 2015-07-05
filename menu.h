@@ -9,6 +9,8 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include "interfaces.h"
+#include "Traits.h"
+
 
 #define DefaultSlabHeight 60
 #define DefaultSlabWidth 170
@@ -28,7 +30,7 @@ class RectangleShape;
 
 namespace GUI {
 
-class IButton;
+//class IButton;
 
 class IMenu
 {
@@ -40,33 +42,27 @@ public:
 };
 
 
-typedef IButton * ButtonPtr;
+//typedef IButton * ButtonSPtr;
+typedef std::shared_ptr<IButton> ButtonSPtr;
 
 class MenuBar : public IButton
 {
 public:
     static const internal::GUI_Type gui_Type = internal::Menu;
 
-public:
-    /*
-    enum AlignmentType
-    {
-        Horizontal,
-        Vertical
-    };
-*/
 private:
-    std::unique_ptr<sf::RectangleShape> menuShape;
+    //std::unique_ptr<sf::RectangleShape> menuShape;
+    sf::RectangleShape * menuShape;
     float xScale,yScale;
     float slabHeight, slabWidth;
     float borderSize;
 protected:
-    std::vector<ButtonPtr>::iterator End;
+    std::vector<ButtonSPtr>::iterator End;
     internal::AlignmentType alignment;
     bool isCollapsed;
     std::string name;
-    std::vector<ButtonPtr> buttonList;
-    typedef std::vector<ButtonPtr>::iterator Iter;
+    std::vector<ButtonSPtr> buttonList;
+    typedef std::vector<ButtonSPtr>::iterator Iter;
 
 private:
     bool init;
@@ -76,23 +72,34 @@ private:
     float getOutlineThickness() const {}
 
 
+private:
+    //Non-Copyable
+    MenuBar(const MenuBar & obj );
+    MenuBar & operator=(const MenuBar & obj);
+
 protected:
     const sf::Vector2f getMenuItemPositionAt(int buttonIndex) const;
     const int xFactor() const;
     const int yFactor() const;
-    void UnscaleButton(ButtonPtr p);
+    void UnscaleButton(const ButtonSPtr & p);
 
 public:
 
     explicit MenuBar(const char * _name,internal::AlignmentType _alignment = internal::Horizontal, float _slabWidth = DefaultSlabWidth, float _slabHeight = DefaultSlabHeight,float _borderSize = DefaultMenuBorderSize);
+    ~MenuBar()
+    {
+        if ( menuShape ) delete menuShape;        
+    }
+    MenuBar(MenuBar && obj);
+    MenuBar & operator=(MenuBar && obj);
 
-    MenuBar & AddMenuItem(ButtonPtr _button);
-    IButton *  RemoveMenuItem() { throw "MenuBar::RemoveMenuItem - Not implemented"; }
+    MenuBar & AddMenuItem(const ButtonSPtr & _button);
+    IButton * RemoveMenuItem() { throw "MenuBar::RemoveMenuItem - Not implemented"; }
 
     const sf::Vector2f getSlabDimensions() const;
     const sf::Vector2f getFrameDimensions() const;
-
-    void InsertButton(ButtonPtr _button);
+    //Do not use
+    void InsertButton(ButtonSPtr & _button);
     void draw(sf::RenderTarget & target, sf::RenderStates states) const;
     void setPosition(float posX, float posY);
     void setName(const char * _name);
@@ -100,8 +107,9 @@ public:
     const sf::Vector2f & getPosition() const { return menuShape->getPosition(); }
     float setBorderSize(float _border);
     float getBorderSize() { return borderSize; }
-    void setBorderColor(sf::Color _borderColor) { menuShape->setOutlineColor(_borderColor); }
+    void setBorderColor(sf::Color _borderColor) { menuShape->setOutlineColor(_borderColor); }    
 
+    inline bool IsMouseInside(sf::Window & window);
     virtual void scale(float scaleX, float scaleY);
     void move(float xOffset, float yOffset);
     void SwapAlignment();
@@ -109,14 +117,28 @@ public:
     void Expand();
     virtual void Press() {}
     virtual void Release() {}
+    virtual void Hover(sf::Window &window);
     virtual const internal::GUI_Type getGUIType() const { return gui_Type; }
 
 };
 
 //****************************************************************
 
+namespace internal
+{
+template<>
+struct HasSetSize<MenuBar>
+{
+    static const bool value = false;
+};
 
+template<>
+struct HasSetFillColor<MenuBar>
+{
+    static const bool value = false;
+};
 
+}//EON
 
 
 EON
